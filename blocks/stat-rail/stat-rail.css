@@ -1,0 +1,167 @@
+/*
+ * Stat Rail block
+ * Full-height red sidebar of company/financial stats. Mobile-first: renders
+ * full width, stacked above the main content column. At >=900px it's meant
+ * to sit as a narrow sidebar next to the main content (that column sizing is
+ * controlled by the section/page layout, not this block).
+ */
+
+.stat-rail {
+  background-color: #e5262a;
+  color: #fff;
+  height: 100%;
+  padding: var(--space-xl, 32px) var(--space-l, 24px);
+  box-sizing: border-box;
+}
+
+.stat-rail-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-l, 24px);
+  max-width: 420px;
+  margin-inline: auto;
+}
+
+@media (width >= 900px) {
+  .stat-rail-content {
+    max-width: none;
+    margin-inline: 0;
+  }
+}
+
+.stat-rail-heading {
+  margin: 0;
+  font-size: var(--heading-font-size-xs, 16px);
+  font-weight: 700;
+  color: #fff;
+}
+
+.stat-rail-divider {
+  border: none;
+  border-top: 1px solid rgb(255 255 255 / 35%);
+  margin: 0;
+}
+
+/* Stats */
+.stat-rail-stats {
+  display: grid;
+  gap: var(--space-m, 16px);
+}
+
+.stat-rail-stats-pair,
+.stat-rail-stats-grid {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.stat-rail-stats-hero {
+  grid-template-columns: 1fr;
+}
+
+.stat-rail-stat {
+  min-width: 0;
+}
+
+.stat-rail-stat-value {
+  margin: 0;
+  font-weight: 800;
+  font-size: 28px;
+  line-height: 1.15;
+  overflow-wrap: break-word;
+}
+
+.stat-rail-stats-hero .stat-rail-stat-value {
+  font-size: 32px;
+}
+
+.stat-rail-stat-label {
+  margin: 4px 0 0;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgb(255 255 255 / 80%);
+}
+
+@media (width >= 900px) {
+  .stat-rail-stat-value {
+    font-size: 30px;
+  }
+
+  .stat-rail-stats-hero .stat-rail-stat-value {
+    font-size: 32px;
+  }
+}
+
+/* Headcount-by-region table */
+.stat-rail-table {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-s, 8px);
+  font-size: 13px;
+  background: rgb(255 255 255 / 8%);
+  border-radius: 8px;
+  padding: var(--space-s, 8px) var(--space-m, 16px);
+}
+
+.stat-rail-table-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-rail-table-group + .stat-rail-table-group {
+  margin-top: var(--space-xs, 4px);
+  padding-top: var(--space-xs, 4px);
+  border-top: 1px solid rgb(255 255 255 / 20%);
+}
+
+.stat-rail-table-region {
+  margin: 0 0 2px;
+  font-weight: 700;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgb(255 255 255 / 70%);
+}
+
+.stat-rail-table-row {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-m, 16px);
+  padding: 3px 0;
+  border-bottom: 1px solid rgb(255 255 255 / 15%);
+}
+
+.stat-rail-table-row:last-child {
+  border-bottom: none;
+}
+
+.stat-rail-table-label {
+  color: rgb(255 255 255 / 90%);
+}
+
+.stat-rail-table-value {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.stat-rail-table-total {
+  margin-top: var(--space-xs, 4px);
+  padding-top: var(--space-s, 8px);
+  border-top: 1px solid rgb(255 255 255 / 45%);
+  border-bottom: none;
+  font-weight: 700;
+}
+
+/* Footnotes */
+.stat-rail-footnotes {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.stat-rail-footnotes p {
+  margin: 0;
+  font-size: 11px;
+  color: rgb(255 255 255 / 65%);
+  line-height: 1.4;
+}

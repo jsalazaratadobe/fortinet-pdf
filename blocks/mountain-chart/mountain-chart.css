@@ -1,0 +1,223 @@
+/* Mountain chart – stacked area "mountain" visuals (TAM + Fortinet Journey) */
+
+.mountain-chart {
+  max-width: 1200px;
+  margin-inline: auto;
+}
+
+.mountain-chart-inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-l);
+}
+
+.mountain-chart-main {
+  min-width: 0;
+  flex: 1;
+}
+
+/* Canvas */
+.mountain-chart-canvas-wrapper {
+  position: relative;
+  width: 100%;
+  height: 220px;
+}
+
+.mountain-chart-brand {
+  position: absolute;
+  bottom: 8%;
+  right: 4%;
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+  color: #fff;
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+/* Legend (TAM variant) */
+.mountain-chart-legend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-s) var(--space-m);
+}
+
+.mountain-chart-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #444;
+}
+
+.mountain-chart-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Company-name chips (TAM variant, decorative, generic placeholder text) */
+.mountain-chart-chips {
+  position: absolute;
+  inset: 0;
+  display: none;
+  pointer-events: none;
+}
+
+.mountain-chart-chip {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  background: #f0f0f0;
+  border: 1px solid #dadada;
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 9px;
+  font-weight: 600;
+  color: #666;
+  white-space: nowrap;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 8%);
+}
+
+/* Timeline strip (era dots + labels below the canvas) */
+.mountain-chart-timeline {
+  display: flex;
+  overflow-x: auto;
+  gap: var(--space-m);
+  padding-top: var(--space-s);
+  border-top: 2px solid #e5262a;
+  scrollbar-width: thin;
+}
+
+.mountain-chart-timeline-item {
+  flex: 1 0 72px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 4px;
+}
+
+.mountain-chart-timeline-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #e5262a;
+  margin-top: -21px;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 2px #e5262a;
+}
+
+.mountain-chart-timeline-year {
+  font-size: 11px;
+  font-weight: 700;
+  color: #1a1a1a;
+  white-space: nowrap;
+}
+
+.mountain-chart-timeline-label {
+  display: flex;
+  flex-direction: column;
+  font-size: 9px;
+  line-height: 1.3;
+  color: #666;
+}
+
+/* Stats column (Journey variant) */
+.mountain-chart-stats {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-m);
+}
+
+.mountain-chart-stat-label {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #da291c;
+}
+
+.mountain-chart-stat-value {
+  margin: 2px 0;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.mountain-chart-stat-caption {
+  margin: 0;
+  font-size: 12px;
+  color: #666;
+  line-height: 1.4;
+}
+
+/* ==========================================================================
+   Tablet (>= 600px) – restore chips, taller canvas
+   ========================================================================== */
+@media (width >= 600px) {
+  .mountain-chart-chips {
+    display: block;
+  }
+
+  .mountain-chart-canvas-wrapper {
+    height: 300px;
+  }
+
+  .mountain-chart.journey .mountain-chart-inner {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  .mountain-chart.journey .mountain-chart-stats {
+    flex: 0 0 220px;
+  }
+}
+
+/* ==========================================================================
+   Desktop (>= 900px) – side-by-side legend/stats layout, larger canvas
+   ========================================================================== */
+@media (width >= 900px) {
+  .mountain-chart-canvas-wrapper {
+    height: 380px;
+  }
+
+  .mountain-chart-inner {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  .mountain-chart-legend {
+    flex: 0 0 160px;
+    flex-direction: column;
+    gap: var(--space-m);
+    padding-top: var(--space-s);
+  }
+
+  .mountain-chart.journey .mountain-chart-stats {
+    flex: 0 0 260px;
+    padding-top: var(--space-m);
+  }
+
+  .mountain-chart-chip {
+    font-size: 10px;
+    padding: 3px 10px;
+  }
+}
+
+/* ==========================================================================
+   Large desktop (>= 1200px)
+   ========================================================================== */
+@media (width >= 1200px) {
+  .mountain-chart-canvas-wrapper {
+    height: 420px;
+  }
+}

@@ -1,0 +1,227 @@
+/*
+ * Comparison Matrix block
+ * Mobile-first: columns stack vertically (one option's full column, then
+ * the next). At >=600px it becomes a real N-column grid with a dedicated
+ * row-label column on the left, using `display: contents` on the column
+ * wrappers so their children (banner + items) flow directly into the grid
+ * via `grid-auto-flow: column`.
+ */
+
+.comparison-matrix {
+  --comparison-matrix-border: var(--color-gray-200, #d3d3d3);
+  --comparison-matrix-label-color: var(--color-gray-600, #636363);
+
+  max-width: 1200px;
+  margin-inline: auto;
+}
+
+.comparison-matrix-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl, 32px);
+}
+
+.comparison-matrix-column {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Dedicated label column: desktop-only, hidden on mobile */
+.comparison-matrix-label-column {
+  display: none;
+}
+
+.comparison-matrix-banner-spacer {
+  display: none;
+}
+
+.comparison-matrix-row-label {
+  font-weight: 700;
+  color: var(--comparison-matrix-label-color);
+  font-size: var(--body-font-size-s, 14px);
+}
+
+/* Banner (colored column header) */
+.comparison-matrix-banner {
+  background-color: var(--comparison-matrix-banner-color, #1c2b4a);
+  color: #fff;
+  padding: var(--space-m, 16px) var(--space-l, 24px);
+  text-align: center;
+  border-radius: 12px 12px 0 0;
+}
+
+.comparison-matrix-banner-icon {
+  width: 40px;
+  height: 40px;
+  margin: 0 auto var(--space-s, 8px);
+  color: #fff;
+}
+
+.comparison-matrix-banner-icon svg,
+.comparison-matrix-banner-icon picture img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+}
+
+.comparison-matrix-banner-title {
+  margin: 0;
+  font-weight: 700;
+  font-size: var(--body-font-size-l, 16px);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.comparison-matrix-banner-subtitle {
+  margin: 4px 0 0;
+  font-size: var(--body-font-size-xs, 12px);
+  opacity: 0.9;
+}
+
+/* Item = one cell's worth of content for a given row within a column */
+.comparison-matrix-item {
+  border-left: 1px solid var(--comparison-matrix-border);
+  border-right: 1px solid var(--comparison-matrix-border);
+  border-bottom: 1px solid var(--comparison-matrix-border);
+  padding: var(--space-m, 16px) var(--space-l, 24px);
+  background: #fff;
+}
+
+.comparison-matrix-column .comparison-matrix-item:last-child {
+  border-radius: 0 0 12px 12px;
+}
+
+/* Inline row label shown above each item's content on mobile only */
+.comparison-matrix-item-label {
+  font-weight: 700;
+  font-size: var(--body-font-size-xs, 12px);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--comparison-matrix-label-color);
+  margin-bottom: var(--space-xs, 4px);
+}
+
+.comparison-matrix-item-content {
+  font-size: var(--body-font-size-s, 14px);
+  color: var(--color-ink, #333);
+  line-height: 1.5;
+}
+
+.comparison-matrix-item-content p {
+  margin: 0 0 var(--space-s, 8px);
+}
+
+.comparison-matrix-item-content p:last-child {
+  margin-bottom: 0;
+}
+
+.comparison-matrix-item-content ul {
+  margin: 0;
+  padding-left: 1.1em;
+}
+
+.comparison-matrix-item-content li {
+  margin-bottom: 4px;
+}
+
+/* Big stat callout: a paragraph that is entirely a single bolded run,
+   e.g. <p><strong>65%</strong></p> */
+.comparison-matrix-item-content p:has(> strong:only-child) {
+  margin-top: var(--space-s, 8px);
+}
+
+.comparison-matrix-item-content p:has(> strong:only-child) strong {
+  display: block;
+  color: #e5262a;
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+/* ==========================================================================
+   Desktop grid layout (>= 600px)
+   ========================================================================== */
+@media (width >= 600px) {
+  .comparison-matrix-grid {
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-columns: minmax(110px, 160px) repeat(var(--comparison-matrix-cols), minmax(0, 1fr));
+    grid-template-rows: auto repeat(var(--comparison-matrix-rows), auto);
+    gap: 0 var(--space-l, 24px);
+    align-items: stretch;
+  }
+
+  .comparison-matrix-column,
+  .comparison-matrix-label-column {
+    display: contents;
+  }
+
+  .comparison-matrix-banner-spacer {
+    display: block;
+  }
+
+  .comparison-matrix-row-label {
+    display: flex;
+    align-items: center;
+    padding: var(--space-m, 16px) 0;
+    border-bottom: 1px solid transparent;
+  }
+
+  .comparison-matrix-item-label {
+    display: none;
+  }
+
+  .comparison-matrix-item {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+}
+
+@media (width >= 900px) {
+  .comparison-matrix-banner {
+    padding: var(--space-l, 24px);
+  }
+
+  .comparison-matrix-item {
+    padding: var(--space-l, 24px);
+  }
+
+  .comparison-matrix-item-content {
+    font-size: var(--body-font-size-m, 15px);
+  }
+
+  .comparison-matrix-item-content p:has(> strong:only-child) strong {
+    font-size: 2.5rem;
+  }
+}
+
+@media (width >= 1200px) {
+  .comparison-matrix-grid {
+    column-gap: var(--space-xl, 32px);
+  }
+}
+
+/* ==========================================================================
+   Compact modifier — denser spacing/type
+   ========================================================================== */
+.comparison-matrix.compact .comparison-matrix-banner {
+  padding: var(--space-s, 8px) var(--space-m, 16px);
+}
+
+.comparison-matrix.compact .comparison-matrix-banner-title {
+  font-size: var(--body-font-size-m, 15px);
+}
+
+.comparison-matrix.compact .comparison-matrix-item {
+  padding: var(--space-s, 8px) var(--space-m, 16px);
+}
+
+.comparison-matrix.compact .comparison-matrix-item-content {
+  font-size: var(--body-font-size-xs, 12px);
+}
+
+.comparison-matrix.compact .comparison-matrix-item-content p:has(> strong:only-child) strong {
+  font-size: 1.5rem;
+}

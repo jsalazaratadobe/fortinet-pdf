@@ -1,0 +1,248 @@
+/*
+ * Pyramid Diagram Block – "Fortify Your Networks" convergence pyramid (PDF page 2)
+ * One-off illustrative diagram; see pyramid-diagram.js for the authoring contract.
+ *
+ * Mobile-first: below 900px the pyramid silhouette is hidden and each band /
+ * segment / group renders as a simple stacked, full-width block instead of an
+ * overlaid triangle, per the responsive requirement to simplify gracefully on
+ * small screens rather than cram a triangle shape into a narrow viewport.
+ */
+
+.pyramid-diagram {
+  max-width: var(--grid-container-width, 1200px);
+  margin: 0 auto;
+}
+
+.pyramid-diagram-figure {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-s, 12px);
+}
+
+/* Background triangle silhouette – desktop/tablet only */
+.pyramid-diagram-shape {
+  display: none;
+}
+
+/* ==========================================================================
+   Bands (apex / convergence / fortios)
+   ========================================================================== */
+
+.pyramid-diagram-bands {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-s, 12px);
+}
+
+.pyramid-diagram-band {
+  background: #dcdcdc;
+  border-radius: 12px;
+  padding: 16px 20px;
+  text-align: center;
+}
+
+.pyramid-diagram-band-apex {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  border-radius: 999px;
+  padding: 18px 20px;
+}
+
+.pyramid-diagram-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--brochure-red, #e5262a);
+}
+
+.pyramid-diagram-badge svg {
+  width: 18px;
+  height: 18px;
+  fill: #fff;
+}
+
+.pyramid-diagram-band-title {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: #1a1a1a;
+}
+
+.pyramid-diagram-band-apex .pyramid-diagram-band-title {
+  font-size: 12px;
+}
+
+.pyramid-diagram-band-desc {
+  margin: 8px 0 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #333;
+  max-width: 60ch;
+  margin-inline: auto;
+}
+
+/* ==========================================================================
+   Base: 5 colored segments + 3 grouping labels
+   ========================================================================== */
+
+.pyramid-diagram-base {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pyramid-diagram-segments,
+.pyramid-diagram-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pyramid-diagram-segment,
+.pyramid-diagram-group {
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+  padding: 12px 10px;
+  border-radius: 6px;
+  line-height: 1.3;
+}
+
+.pyramid-diagram-segment-firewall { background: #e8935a; }
+.pyramid-diagram-segment-ot-iot { background: var(--brochure-red, #e5262a); }
+.pyramid-diagram-segment-segmentation { background: #8a6bab; }
+.pyramid-diagram-segment-sase { background: #4a7fc9; }
+.pyramid-diagram-segment-secops { background: #2ab08f; }
+
+.pyramid-diagram-group-secure-networking { background: #b7211a; }
+.pyramid-diagram-group-unified-sase { background: #2f5fa0; }
+.pyramid-diagram-group-security-ops { background: #1a9b8f; }
+
+.pyramid-diagram-caption {
+  margin: var(--space-m, 20px) 0 0;
+  text-align: center;
+  font-size: 15px;
+  color: #333;
+}
+
+/* ==========================================================================
+   Desktop/tablet (900px+): overlay bands on the triangle silhouette, base
+   segments become a proportional grid so grouping spans line up exactly.
+   ========================================================================== */
+@media (width >= 900px) {
+  .pyramid-diagram-figure {
+    position: relative;
+    padding-top: 12px;
+  }
+
+  .pyramid-diagram-shape {
+    display: block;
+    position: absolute;
+    inset: 0 0 auto;
+    width: 100%;
+    height: 380px;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .pyramid-diagram-shape svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .pyramid-diagram-shape svg path {
+    fill: #dcdcdc;
+  }
+
+  .pyramid-diagram-bands {
+    position: relative;
+    z-index: 1;
+    min-height: 380px;
+    justify-content: flex-start;
+    gap: 0;
+  }
+
+  .pyramid-diagram-band {
+    background: transparent;
+    border-radius: 0;
+    padding: 0 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .pyramid-diagram-band-apex {
+    flex: 0 0 30%;
+    border-radius: 0;
+    padding: 0;
+  }
+
+  .pyramid-diagram-band-convergence {
+    flex: 0 0 25%;
+  }
+
+  .pyramid-diagram-band-fortios {
+    flex: 0 0 45%;
+  }
+
+  .pyramid-diagram-band-desc {
+    max-width: 46ch;
+  }
+
+  .pyramid-diagram-base {
+    gap: 6px;
+  }
+
+  .pyramid-diagram-segments,
+  .pyramid-diagram-groups {
+    flex-direction: row;
+    gap: 6px;
+  }
+
+  .pyramid-diagram-segment {
+    flex: 1 1 0;
+    font-size: 13px;
+    padding: 16px 10px;
+  }
+
+  .pyramid-diagram-group {
+    font-size: 13px;
+    padding: 10px;
+  }
+
+  .pyramid-diagram-group-secure-networking,
+  .pyramid-diagram-group-unified-sase {
+    flex: 2 1 0;
+  }
+
+  .pyramid-diagram-group-security-ops {
+    flex: 1 1 0;
+  }
+}
+
+@media (width >= 1200px) {
+  .pyramid-diagram-shape {
+    height: 420px;
+  }
+
+  .pyramid-diagram-bands {
+    min-height: 420px;
+  }
+
+  .pyramid-diagram-band-desc {
+    font-size: 14px;
+  }
+
+  .pyramid-diagram-caption {
+    font-size: 16px;
+  }
+}

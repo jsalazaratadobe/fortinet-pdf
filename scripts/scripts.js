@@ -216,6 +216,29 @@ function decorateTextLinks(main) {
   });
 }
 
+/**
+ * Applies each section's `Section Metadata` block (a `style` row becomes one
+ * or more classes on the section, e.g. `style: brochure-page, brochure-page-1`)
+ * then removes it, so it isn't left behind for decorateBlocks to try (and
+ * fail) to load as a real block.
+ * @param {Element} main
+ */
+function decorateSectionMetadata(main) {
+  main.querySelectorAll('.section div.section-metadata').forEach((metaBlock) => {
+    const section = metaBlock.closest('.section');
+    const meta = readBlockConfig(metaBlock);
+    Object.keys(meta).forEach((key) => {
+      if (key === 'style') {
+        meta.style.split(',').map((s) => toClassName(s.trim())).filter(Boolean)
+          .forEach((s) => section.classList.add(s));
+      } else {
+        section.dataset[toCamelCase(key)] = meta[key];
+      }
+    });
+    metaBlock.remove();
+  });
+}
+
 export function decorateMain(main) {
   decorateButtons(main);
   decorateTextLinks(main);
@@ -223,6 +246,7 @@ export function decorateMain(main) {
   inlineColorIcons(main);
   buildAutoBlocks(main);
   decorateSections(main);
+  decorateSectionMetadata(main);
   decorateBlocks(main);
   if (document.contains(main)) initPageSchemas();
 }
