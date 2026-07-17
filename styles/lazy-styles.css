@@ -348,14 +348,20 @@ header .nav-wrapper.scrolled {
   gap: var(--space-l, 32px);
 }
 
+/* Flexbox rather than CSS Grid: a chart block's <canvas> has a 300px
+   default intrinsic width, which forces CSS Grid's "automatic minimum
+   size" to blow out a 1fr track (even with min-width: 0 on the item, this
+   proved unreliable across the nested block-wrapper divs here). Flexbox's
+   percentage flex-basis sizes each item directly instead of deriving a
+   track size from content, so it isn't affected by canvas' intrinsic size. */
 .brochure-grid-2x2 {
-  display: grid;
-  grid-template-columns: 1fr;
+  display: flex;
+  flex-direction: column;
   gap: var(--space-l, 32px);
 }
 
 .brochure-grid-2x2 > *:first-child {
-  grid-column: 1 / -1;
+  width: 100%;
 }
 
 .brochure-grid-pair-col {
@@ -366,7 +372,12 @@ header .nav-wrapper.scrolled {
 
 @media (width >= 600px) {
   .brochure-grid-2x2 {
-    grid-template-columns: repeat(2, 1fr);
+    flex-flow: row wrap;
+  }
+
+  .brochure-grid-2x2 > *:not(:first-child) {
+    flex: 0 0 calc(50% - var(--space-l, 32px) / 2);
+    min-width: 0;
   }
 }
 
@@ -384,9 +395,12 @@ header .nav-wrapper.scrolled {
   }
 }
 
-/* Page 2: stat-rail sits as a left column beside the rest of the page content */
+/* Page 2: stat-rail sits as a left column beside the rest of the page content.
+   Scoped with :has() to the specific section containing the stat-rail —
+   page 2 has a SECOND section also tagged .brochure-page-2 (the pie chart
+   grid), which must not be pulled into this sidebar layout too. */
 @media (width >= 900px) {
-  main > .section.brochure-page-2 {
+  main > .section.brochure-page-2:has(> .stat-rail-wrapper) {
     display: grid;
     grid-template-columns: 300px 1fr;
     gap: var(--space-xl, 48px);

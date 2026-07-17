@@ -11,15 +11,22 @@ const DEFAULT_PALETTE = ['#e5262a', '#2ab08f', '#4fa5cc', '#1c2b4a', '#f5a623', 
 function parseTable(block) {
   const rows = [...block.children].map((row) => [...row.children].map((cell) => cell.textContent.trim()));
   let colors;
+  let title;
   const filtered = rows.filter((row) => {
     if (row[0]?.toLowerCase() === 'colors') {
       colors = row.slice(1).filter(Boolean);
       return false;
     }
+    if (row[0]?.toLowerCase() === 'title') {
+      [, title] = row;
+      return false;
+    }
     return row.some((cell) => cell !== '');
   });
   const [header, ...dataRows] = filtered;
-  return { header, dataRows, colors };
+  return {
+    header, dataRows, colors, title,
+  };
 }
 
 function toNumber(value) {
@@ -187,7 +194,9 @@ function buildPieDonutConfig(type, categories, series, colors) {
 }
 
 export default async function decorate(block) {
-  const { header, dataRows, colors = [] } = parseTable(block);
+  const {
+    header, dataRows, colors = [], title,
+  } = parseTable(block);
   if (!header || !dataRows.length) return;
   const { categories, series } = buildSeries(header, dataRows);
 
@@ -228,9 +237,17 @@ export default async function decorate(block) {
   if (!config.type) config.type = isBarLine ? 'bar' : 'bar';
 
   const wrapper = createTag('div', { class: 'chart-canvas-wrapper' });
-  const canvas = createTag('canvas', { role: 'img', 'aria-label': header.slice(1).join(', ') });
+  const canvas = createTag('canvas', { role: 'img', 'aria-label': title || header.slice(1).join(', ') });
   wrapper.append(canvas);
-  block.replaceChildren(wrapper);
+
+  const children = [];
+  if (title) {
+    const caption = createTag('p', { class: 'chart-title' });
+    caption.textContent = title;
+    children.push(caption);
+  }
+  children.push(wrapper);
+  block.replaceChildren(...children);
 
   await loadChartJs();
   createChart(canvas, config);

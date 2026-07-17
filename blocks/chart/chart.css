@@ -3,6 +3,14 @@
   margin-inline: auto;
 }
 
+.chart-title {
+  text-align: center;
+  font-weight: 700;
+  font-size: 15px;
+  color: #333;
+  margin: 0 0 8px;
+}
+
 .chart-canvas-wrapper {
   position: relative;
   width: 100%;
