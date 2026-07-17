@@ -1,0 +1,67 @@
+/* Columns – Fortinet style */
+
+.columns > div {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-l);
+}
+
+.columns img {
+  width: 100%;
+  border-radius: 4px;
+}
+
+.columns > div > div {
+  order: 1;
+}
+
+.columns > div > .columns-img-col {
+  order: 0;
+}
+
+.columns > div > .columns-img-col img {
+  display: block;
+}
+
+.columns > div > div :is(h2, h3) {
+  font-weight: 700;
+  color: #333;
+}
+
+.columns > div > div p {
+  line-height: 1.6;
+  color: #444;
+  font-size: 14px;
+}
+
+.columns > div > div ul {
+  padding-left: 0;
+  list-style: none;
+}
+
+.columns > div > div ul li {
+  padding: 4px 0;
+}
+
+.columns > div > div ul li a {
+  color: #333;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.columns > div > div ul li a:hover {
+  color: #da291c;
+}
+
+@media (width >= 900px) {
+  .columns > div {
+    align-items: flex-start;
+    flex-direction: unset;
+    gap: var(--space-2xl, 48px);
+  }
+
+  .columns > div > div {
+    flex: 1;
+    order: unset;
+  }
+}

@@ -1,0 +1,397 @@
+/* stylelint-disable no-descending-specificity */
+
+/* Hero block – Fortinet style, mobile-first */
+
+.hero-container .hero-wrapper {
+  max-width: unset;
+  padding: 0;
+}
+
+
+.hero {
+  position: relative;
+  background-color: #0c1425;
+  overflow: hidden;
+}
+
+/* Single-slide hero (non-carousel) */
+.hero > div:first-child {
+  position: relative;
+  line-height: 0;
+}
+
+.hero .hero-img-light,
+.hero .hero-img-dark {
+  line-height: 0;
+}
+
+.hero .hero-img-dark {
+  display: none;
+}
+
+.hero picture img {
+  display: block;
+  width: 100%;
+  min-height: 400px;
+  max-height: 580px;
+  object-fit: cover;
+}
+
+.hero:not(.hero-carousel, .no-image) > div:last-child {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  padding: 40px calc((100vw - var(--grid-container-width, 1200px)) / 2);
+  display: flex;
+  align-items: center;
+}
+
+.hero:not(.hero-carousel, .no-image) > div:last-child > div {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-s);
+  max-width: 600px;
+}
+
+.hero .hero-tagline {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #da291c;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  margin: 0;
+}
+
+.hero h1,
+.hero h2 {
+  margin: 0;
+  font-family: var(--heading-font-family);
+  font-size: clamp(1.75rem, 5vw, 2.8rem);
+  font-weight: 700;
+  line-height: 1.2;
+  color: #fff;
+}
+
+.hero p:not(.button-container, .hero-tagline) {
+  display: block;
+  max-width: 550px;
+  margin: 0;
+  font-size: 1rem;
+  color: rgb(255 255 255 / 85%);
+  line-height: 1.6;
+}
+
+.hero p.button-container {
+  margin-top: var(--space-s);
+}
+
+.hero:not(.hero-carousel) a.button:any-link {
+  background-color: #fff;
+  border: 2px solid #fff;
+  border-radius: 30px;
+  color: #000;
+  padding: 12px 28px;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.hero:not(.hero-carousel) a.button:any-link::after {
+  display: none;
+}
+
+@media (width >= 600px) {
+  .hero p:not(.button-container, .hero-tagline) {
+    display: block;
+    font-size: 1.1rem;
+  }
+}
+
+@media (width >= 900px) {
+  .hero:not(.hero-carousel) > div:last-child {
+    padding: 80px 5vw;
+  }
+
+  .hero:not(.hero-carousel) > div:last-child > div {
+    max-width: 650px;
+  }
+
+  .hero h1,
+  .hero h2 {
+    font-size: clamp(2.5rem, 3.5vw, 3rem);
+  }
+
+  .hero picture img {
+    min-height: 500px;
+  }
+}
+
+@media (width >= 1200px) {
+  .hero:not(.hero-carousel) > div:last-child {
+    padding: 100px 8vw;
+  }
+
+  .hero h1,
+  .hero h2 {
+    font-size: 2.8rem;
+  }
+}
+
+/* No-image fallback */
+.hero.no-image {
+  background-color: #019062;
+}
+
+.hero.no-image > .hero-text {
+  position: static;
+  display: block;
+  inset: auto;
+  max-width: var(--grid-container-width, 1200px);
+  margin: 0 auto;
+  padding: 64px 0;
+  align-items: unset;
+}
+
+.hero.no-image h1 {
+  margin: 0 0 16px;
+  max-width: 700px;
+}
+
+.hero.no-image p:not(.button-container) {
+  display: block;
+  margin: 0 0 32px;
+  color: rgb(255 255 255 / 85%);
+  font-size: 1rem;
+  line-height: 1.6;
+  max-width: 600px;
+}
+
+.hero.no-image .button-container {
+  display: inline-block;
+  margin: 0 16px 0 0;
+}
+
+.hero.no-image .button-container:first-of-type a.button:any-link {
+  background-color: #fff;
+  border-color: #fff;
+  color: #333;
+}
+
+.hero.no-image .button-container:last-of-type a.button:any-link {
+  background-color: transparent;
+  border-color: #fff;
+  color: #fff;
+}
+
+/* ==========================================================================
+   Hero Carousel
+   ========================================================================== */
+
+.hero.hero-carousel {
+  min-height: 400px;
+}
+
+.hero-carousel-track {
+  position: relative;
+  width: 100%;
+  min-height: 400px;
+}
+
+.hero-slide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+  pointer-events: none;
+}
+
+.hero-slide.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.hero-slide-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  line-height: 0;
+}
+
+.hero-slide-bg picture,
+.hero-slide-bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hero-slide-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 48px var(--content-padding-inline, 24px);
+  max-width: 650px;
+}
+
+.hero-slide-content h1,
+.hero-slide-content h2 {
+  margin: 0;
+  font-size: clamp(1.75rem, 5vw, 2.8rem);
+  font-weight: 700;
+  line-height: 1.2;
+  color: #fff;
+}
+
+.hero-slide-content p {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: rgb(255 255 255 / 85%);
+}
+
+.hero-slide-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.hero-slide-buttons p.button-container {
+  margin: 0;
+}
+
+.hero-slide-buttons p.button-container:first-child a.button:any-link {
+  background-color: #fff;
+  border-color: #fff;
+  color: #0c1425;
+}
+
+.hero-slide-buttons p.button-container:first-child a.button:any-link::after {
+  border-color: #0c1425;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230c1425' stroke-width='2.5'%3E%3Cpath d='M9 6l6 6-6 6'/%3E%3C/svg%3E");
+}
+
+.hero-slide-buttons p.button-container:first-child a.button:any-link:hover {
+  background-color: transparent;
+  border-color: #fff;
+  color: #fff;
+}
+
+.hero-slide-buttons p.button-container:first-child a.button:any-link:hover::after {
+  border-color: currentcolor;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.5'%3E%3Cpath d='M9 6l6 6-6 6'/%3E%3C/svg%3E");
+}
+
+.hero-slide-content a.button:any-link {
+  background-color: transparent;
+  border: 2px solid #fff;
+  border-radius: 30px;
+  color: #fff;
+  padding: 12px 28px;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.hero-slide-content a.button:any-link::after {
+  content: '';
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid currentcolor;
+  border-radius: 50%;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.5'%3E%3Cpath d='M9 6l6 6-6 6'/%3E%3C/svg%3E") center / 12px no-repeat;
+  flex-shrink: 0;
+}
+
+.hero-slide-content a.button:any-link:hover {
+  background-color: #fff;
+  border-color: #fff;
+  color: #0c1425;
+}
+
+.hero-slide-content a.button:any-link:hover::after {
+  border-color: #0c1425;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230c1425' stroke-width='2.5'%3E%3Cpath d='M9 6l6 6-6 6'/%3E%3C/svg%3E");
+}
+
+/* Indicators (dots) */
+.hero-carousel-indicators {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+  z-index: 10;
+}
+
+.hero-carousel-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid rgb(255 255 255 / 70%);
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.3s, border-color 0.3s;
+}
+
+.hero-carousel-dot.active {
+  background: #333;
+  border-color: #333;
+}
+
+.hero-carousel-dot:hover {
+  border-color: #fff;
+}
+
+/* Mobile carousel buttons stack */
+@media (width < 600px) {
+  .hero-slide-buttons {
+    flex-direction: column;
+  }
+}
+
+/* Desktop carousel */
+@media (width >= 900px) {
+  .hero.hero-carousel {
+    min-height: 560px;
+  }
+
+  .hero-carousel-track {
+    min-height: 560px;
+  }
+
+  .hero-slide-content {
+    padding: 80px var(--content-padding-inline, 32px) 80px calc((100vw - var(--grid-container-width, 1200px)) / 2);
+    max-width: 700px;
+  }
+
+  .hero-slide-content h1,
+  .hero-slide-content h2 {
+    font-size: 2.8rem;
+  }
+
+  .hero-slide-content p {
+    font-size: 1.1rem;
+  }
+
+  .hero-carousel-indicators {
+    bottom: 48px;
+  }
+}

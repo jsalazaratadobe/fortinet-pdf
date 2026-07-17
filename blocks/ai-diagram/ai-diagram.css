@@ -1,0 +1,50 @@
+.ai-diagram-container {
+  text-align: center;
+}
+
+.ai-diagram {
+  max-width: var(--grid-container-width);
+  margin: 0 auto;
+  text-align: center;
+}
+
+.ai-diagram .ai-diagram-wrapper {
+  max-width: 1200px;
+  margin: 0 auto var(--space-l);
+}
+
+.ai-diagram .ai-diagram-wrapper svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+/* Headings always visible */
+.ai-diagram .ai-diagram-heading {
+  opacity: 1;
+}
+
+/* Description hidden by default, shown on hover */
+.ai-diagram .ai-diagram-desc {
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.ai-diagram svg.hover-protect .ai-diagram-desc[data-section="protect"],
+.ai-diagram svg.hover-assist .ai-diagram-desc[data-section="assist"],
+.ai-diagram svg.hover-secureai .ai-diagram-desc[data-section="secureai"] {
+  opacity: 1;
+}
+
+
+
+/* Clickable areas cursor */
+.ai-diagram .ai-diagram-area {
+  cursor: pointer;
+}
+
+/* CTA button centering */
+.ai-diagram > .button-container {
+  text-align: center;
+}
