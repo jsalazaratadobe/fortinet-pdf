@@ -818,6 +818,13 @@
   }
 }
 
+/* Monochrome banner variants (all cards share one accent color) */
+.cards.header.red .cards-header-banner { background-color: #e5262a; }
+
+.cards.header.teal .cards-header-banner { background-color: #1a9b8f; }
+
+.cards.header.navy .cards-header-banner { background-color: #1c2b4a; }
+
 /* ==========================================================================
    Stats variant – dark background with green numbers
    ========================================================================== */
@@ -907,6 +914,32 @@
   .cards.stats .cards-card-body p strong {
     font-size: 3.5rem;
   }
+}
+
+/* Light variant – on white background, red numbers, optional icon */
+.cards.stats.light .cards-card-body p strong {
+  color: #e5262a;
+}
+
+.cards.stats.light .cards-card-body p:not(:has(strong)) {
+  color: #555;
+}
+
+.cards.stats.light .cards-card-image {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 12px;
+}
+
+.cards.stats.light .cards-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.cards-container:has(.cards.stats.light) {
+  background: none;
+  padding: 0;
 }
 
 /* ==========================================================================

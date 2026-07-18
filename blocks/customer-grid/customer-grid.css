@@ -1,0 +1,149 @@
+/* ==========================================================================
+   Customer Grid block – 3x3 logo/caption/HQ cells over a faint world map
+   ========================================================================== */
+
+/*
+ * images/globe-bg.jpg is a dark map (dark continents on a dark background)
+ * authored for the "cards.stats" dark variant. This block sits on a light
+ * background, so instead of a CSS filter (extra paint cost, one more
+ * pseudo-element to stack) we fade it toward white by layering a translucent
+ * white scrim over the same image in the background-image stack. Backgrounds
+ * always paint behind element content, so no z-index bookkeeping is needed.
+ *
+ * The source brochure page is essentially pure white (the map is barely a
+ * few percent darker than the page white) — a 92% scrim left this block at
+ * a flat, clearly-gray ~#ededed, which is both visibly darker than the
+ * source and made every white-background logo PNG show up as a stray white
+ * box against the gray. 97% keeps the same "faint map" intent while landing
+ * within a couple of levels of white, matching the source and letting the
+ * mix-blend-mode: multiply on the logo images below do its job.
+ */
+.customer-grid {
+  position: relative;
+  background-color: #fff;
+  background-image:
+    linear-gradient(rgb(255 255 255 / 97%), rgb(255 255 255 / 97%)),
+    url('/images/globe-bg.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.customer-grid-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  max-width: 1200px;
+  margin-inline: auto;
+}
+
+.customer-grid-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-m);
+  padding: var(--space-xl) var(--space-l);
+  border-bottom: 1px solid var(--color-gray-200, #d3d3d3);
+}
+
+.customer-grid-item:last-child {
+  border-bottom: none;
+}
+
+/* Logo */
+.customer-grid-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 64px;
+  max-width: 220px;
+}
+
+.customer-grid-logo picture {
+  display: block;
+  max-width: 100%;
+}
+
+.customer-grid-logo img {
+  display: block;
+  max-width: 100%;
+  max-height: 64px;
+  height: auto;
+  object-fit: contain;
+  margin-inline: auto;
+
+  /* Every authored logo asset is a flat opaque PNG/SVG on a solid white
+     background rather than a transparent cutout. On the source brochure
+     page (pure white) that's invisible; on this block's off-white/mapped
+     background it read as a visible stray white box behind each logo.
+     Multiply blends white pixels into whatever sits behind them (so the
+     box disappears regardless of the exact background tone) while leaving
+     the logos' actual ink colors effectively unchanged. */
+  mix-blend-mode: multiply;
+}
+
+/* Caption */
+.customer-grid-caption {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--color-ink, #333);
+  max-width: 320px;
+}
+
+/* HQ tag */
+.customer-grid-hq {
+  margin: auto 0 0;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--color-ink, #333);
+}
+
+/* Tablet and up: 3x3 grid with dividers, single-column collapses to
+   horizontal-only dividers below 600px (see .customer-grid-item above). */
+@media (width >= 600px) {
+  .customer-grid-list {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .customer-grid-item {
+    border-right: 1px solid var(--color-gray-200, #d3d3d3);
+  }
+
+  /* This block is a one-off for a true 3x3 grid (9 authored cells), so the
+     divider math below assumes a multiple-of-3 item count. With a different
+     count, the last row's dividers won't line up cleanly (e.g. a stray
+     right-hand border on a short final row, or an inconsistent bottom
+     border across a full row that isn't actually last) — acceptable for
+     this block's documented 9-cell contract, not a generic n-item grid. */
+  .customer-grid-item:nth-child(3n) {
+    border-right: none;
+  }
+
+  .customer-grid-item:nth-last-child(-n+3) {
+    border-bottom: none;
+  }
+}
+
+@media (width >= 900px) {
+  .customer-grid-item {
+    padding: var(--space-2xl) var(--space-xl);
+  }
+
+  .customer-grid-logo {
+    height: 72px;
+  }
+
+  .customer-grid-logo img {
+    max-height: 72px;
+  }
+
+  .customer-grid-caption {
+    font-size: 15px;
+  }
+}

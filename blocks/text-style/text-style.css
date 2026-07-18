@@ -1,0 +1,61 @@
+.text-style {
+  max-width: var(--grid-container-width, 1200px);
+  margin-inline: auto;
+}
+
+.text-style p {
+  margin: 0;
+}
+
+/* Eyebrow – small right-aligned label above the cover tagline */
+.text-style.eyebrow-right {
+  text-align: right;
+  margin-top: -32px;
+}
+
+.text-style.eyebrow-right p {
+  color: #666;
+  font-size: 14px;
+}
+
+/* Tagline – cover subtitle with a red underline bar */
+.text-style.tagline p {
+  color: #555;
+  font-size: 18px;
+  margin-top: 4px;
+  padding-bottom: 20px;
+  border-bottom: 4px solid #e5262a;
+  display: inline-block;
+}
+
+/* Caption – small centered gray text under a chart */
+.text-style.caption {
+  margin-top: -24px;
+}
+
+.text-style.caption p {
+  text-align: center;
+  color: #666;
+  font-size: 13px;
+}
+
+/* Source citation */
+.text-style.source p {
+  color: #777;
+  font-size: 12px;
+}
+
+/* Legal fine print */
+.text-style.legal p {
+  color: #888;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+/* Partner logo row – plain bold wordmarks */
+.text-style.partner-logos p {
+  font-size: 22px;
+  font-weight: 700;
+  color: #333;
+  letter-spacing: 0.5px;
+}

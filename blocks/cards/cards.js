@@ -354,6 +354,9 @@ function decorateFlip(block) {
 function decorateHeader(block) {
   const ul = createTag('ul');
   const colors = ['#da291c', '#1a1a1a', '#1a6fbf', '#1a1a1a'];
+  // Monochrome variants (e.g. "cards (header, red)") let CSS drive the banner
+  // color for every card instead of cycling the default palette per card.
+  const hasFixedColor = ['red', 'teal', 'navy'].some((c) => block.classList.contains(c));
 
   [...block.children].forEach((row, idx) => {
     const li = createTag('li');
@@ -363,7 +366,7 @@ function decorateHeader(block) {
     const bodyCol = cols[1];
 
     const header = createTag('div', { class: 'cards-header-banner' });
-    header.style.backgroundColor = colors[idx % colors.length];
+    if (!hasFixedColor) header.style.backgroundColor = colors[idx % colors.length];
     const headerText = headerCol?.querySelector('strong')?.textContent || headerCol?.textContent?.trim() || '';
     header.textContent = headerText;
     li.append(header);

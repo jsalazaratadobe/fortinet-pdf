@@ -86,3 +86,21 @@
 .table.bordered table td {
   border: 1px solid var(--table-border-color);
 }
+
+/* highlight-col-N variant: call out one comparison column (e.g. a vendor's
+   own rating column) with the brand red, for spec/comparison tables */
+.table.highlight-col-2 th:nth-child(2),
+.table.highlight-col-2 td:nth-child(2) {
+  background-color: #e5262a;
+  color: #fff;
+  font-weight: 700;
+  text-align: center;
+}
+
+.table.highlight-col-3 th:nth-child(3),
+.table.highlight-col-3 td:nth-child(3) {
+  background-color: #e5262a;
+  color: #fff;
+  font-weight: 700;
+  text-align: center;
+}

@@ -1,0 +1,363 @@
+/*
+ * Comparison Matrix block
+ * Mobile-first: columns stack vertically (one option's full column, then
+ * the next). At >=600px it becomes a real N-column grid with a dedicated
+ * row-label column on the left, using `display: contents` on the column
+ * wrappers so their children (banner + items) flow directly into the grid
+ * via `grid-auto-flow: column`.
+ */
+
+.comparison-matrix {
+  --comparison-matrix-border: #4d7bc7;
+  --comparison-matrix-label-color: #231f20;
+
+  max-width: 1200px;
+  margin-inline: auto;
+}
+
+.comparison-matrix-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl, 32px);
+}
+
+.comparison-matrix-column {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Dedicated label column: desktop-only, hidden on mobile */
+.comparison-matrix-label-column {
+  display: none;
+}
+
+.comparison-matrix-banner-spacer {
+  display: none;
+}
+
+.comparison-matrix-row-label {
+  font-weight: 700;
+  color: var(--comparison-matrix-label-color);
+  font-size: var(--body-font-size-s, 14px);
+}
+
+/* Banner (colored column header) */
+.comparison-matrix-banner {
+  background-color: var(--comparison-matrix-banner-color, #4d7bc7);
+  color: #fff;
+  padding: var(--space-m, 16px) var(--space-l, 24px);
+  text-align: center;
+  border-radius: 12px 12px 0 0;
+}
+
+.comparison-matrix-banner-icon {
+  width: 40px;
+  height: 40px;
+  margin: 0 auto var(--space-s, 8px);
+  color: #fff;
+}
+
+.comparison-matrix-banner-icon svg,
+.comparison-matrix-banner-icon picture img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+}
+
+.comparison-matrix-banner-title {
+  margin: 0;
+  font-weight: 700;
+  font-size: var(--body-font-size-l, 16px);
+  letter-spacing: 0.01em;
+}
+
+.comparison-matrix-banner-subtitle {
+  margin: 4px 0 0;
+  font-size: var(--body-font-size-xs, 12px);
+  opacity: 0.9;
+}
+
+/* Item = one cell's worth of content for a given row within a column. On
+   desktop these stack into one continuous rounded card per column (see
+   below); the visible boundary comes from the left/right borders shared
+   with the banner plus a thin top divider between sections, not a border
+   around every individual cell. */
+.comparison-matrix-item {
+  border-left: 1px solid var(--comparison-matrix-border);
+  border-right: 1px solid var(--comparison-matrix-border);
+  padding: var(--space-m, 16px) var(--space-l, 24px);
+  background: #fff;
+}
+
+.comparison-matrix-column .comparison-matrix-item:not(:first-child) {
+  border-top: 1px solid var(--color-gray-200, #e2e2e2);
+}
+
+.comparison-matrix-column .comparison-matrix-item:last-child {
+  border-bottom: 1px solid var(--comparison-matrix-border);
+  border-radius: 0 0 12px 12px;
+}
+
+/* Round result icon shown next to the big stat number on "Proven Results"
+   rows (e.g. the OS/ASIC/clipboard/cloud/gears icons in the source). */
+.comparison-matrix-item-content-stat {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-m, 16px);
+}
+
+.comparison-matrix-stat-icon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1.5px solid #e5262a;
+  color: #e5262a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.comparison-matrix-stat-icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+/* Inline row label shown above each item's content on mobile only */
+.comparison-matrix-item-label {
+  font-weight: 700;
+  font-size: var(--body-font-size-xs, 12px);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--comparison-matrix-label-color);
+  margin-bottom: var(--space-xs, 4px);
+}
+
+.comparison-matrix-item-content {
+  font-size: var(--body-font-size-s, 14px);
+  color: var(--color-ink, #333);
+  line-height: 1.5;
+}
+
+.comparison-matrix-item-content p {
+  margin: 0 0 var(--space-s, 8px);
+}
+
+.comparison-matrix-item-content p:last-child {
+  margin-bottom: 0;
+}
+
+.comparison-matrix-item-content ul {
+  margin: 0;
+  padding-left: 1.1em;
+}
+
+.comparison-matrix-item-content li {
+  margin-bottom: 4px;
+}
+
+/* Big stat callout: a paragraph that is entirely a single bolded run,
+   e.g. <p><strong>65%</strong></p> */
+.comparison-matrix-item-content p:has(> strong:only-child) {
+  margin-top: var(--space-s, 8px);
+}
+
+.comparison-matrix-item-content p:has(> strong:only-child) strong {
+  display: block;
+  color: #e5262a;
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+/* ==========================================================================
+   Desktop grid layout (>= 600px)
+   ========================================================================== */
+@media (width >= 600px) {
+  .comparison-matrix-grid {
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-columns: minmax(110px, 160px) repeat(var(--comparison-matrix-cols), minmax(0, 1fr));
+    grid-template-rows: auto repeat(var(--comparison-matrix-rows), auto);
+    gap: 0 var(--space-l, 24px);
+    align-items: stretch;
+  }
+
+  .comparison-matrix-column,
+  .comparison-matrix-label-column {
+    display: contents;
+  }
+
+  .comparison-matrix-banner-spacer {
+    display: block;
+  }
+
+  .comparison-matrix-row-label {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    text-align: right;
+    padding: var(--space-m, 16px) var(--space-m, 16px) var(--space-m, 16px) 0;
+    border-bottom: 1px solid transparent;
+  }
+
+  .comparison-matrix-item-label {
+    display: none;
+  }
+
+  .comparison-matrix-item {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+}
+
+@media (width >= 900px) {
+  .comparison-matrix-banner {
+    padding: var(--space-l, 24px);
+  }
+
+  .comparison-matrix-item {
+    padding: var(--space-l, 24px);
+  }
+
+  .comparison-matrix-item-content {
+    font-size: var(--body-font-size-m, 15px);
+  }
+
+  .comparison-matrix-item-content p:has(> strong:only-child) strong {
+    font-size: 2.5rem;
+  }
+}
+
+@media (width >= 1200px) {
+  .comparison-matrix-grid {
+    column-gap: var(--space-xl, 32px);
+  }
+}
+
+/* ==========================================================================
+   Compact modifier — denser spacing/type
+   ========================================================================== */
+.comparison-matrix.compact .comparison-matrix-banner {
+  padding: var(--space-s, 8px) var(--space-m, 16px);
+}
+
+.comparison-matrix.compact .comparison-matrix-banner-title {
+  font-size: var(--body-font-size-m, 15px);
+}
+
+.comparison-matrix.compact .comparison-matrix-item {
+  padding: var(--space-s, 8px) var(--space-m, 16px);
+}
+
+.comparison-matrix.compact .comparison-matrix-item-content {
+  font-size: var(--body-font-size-xs, 12px);
+}
+
+.comparison-matrix.compact .comparison-matrix-item-content p:has(> strong:only-child) strong {
+  font-size: 1.5rem;
+}
+
+/* ==========================================================================
+   Icon-header modifier (auto-applied) — e.g. the FortiAI matrix: flat white
+   header with a round auto-icon + title + two-line caption instead of a
+   colored banner, and one continuous light-gray band behind all columns'
+   rows instead of per-column card boxes. `decorate()` adds this class
+   automatically when it detects plain-text headers shaped like
+   "Name (Caption, Subtitle)".
+   ========================================================================== */
+.comparison-matrix.icon-header .comparison-matrix-banner {
+  background: none;
+  color: var(--comparison-matrix-label-color);
+  text-align: left;
+  padding: 0 var(--space-m, 16px) var(--space-m, 16px);
+  border-radius: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-s, 8px);
+}
+
+/* Each item cell gets its own light-gray fill and border-left/right removed
+   (the border-top divider between rows is intentionally left alone — the
+   base rule's divider matches the source's Features/Values divider). The
+   desktop column gap is zeroed (see media query below) so the fills of
+   adjacent columns touch and read as one continuous banded panel, without
+   needing a single element to span the grid (which would fight the
+   auto-placed column layout). */
+.comparison-matrix.icon-header .comparison-matrix-item {
+  border-left: none;
+  border-right: none;
+  background: #f4f3f3;
+}
+
+.comparison-matrix.icon-header .comparison-matrix-column .comparison-matrix-item:last-child {
+  border-bottom: none;
+  border-radius: 0;
+}
+
+.comparison-matrix.icon-header .comparison-matrix-banner-icon-plain {
+  width: 44px;
+  height: 44px;
+  margin: 0;
+  flex-shrink: 0;
+  color: var(--comparison-matrix-icon-color, #1c2b4a);
+  border: 1.5px solid currentcolor;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.comparison-matrix.icon-header .comparison-matrix-banner-icon-plain svg {
+  width: 24px;
+  height: 24px;
+}
+
+.comparison-matrix.icon-header .comparison-matrix-banner-text {
+  min-width: 0;
+}
+
+.comparison-matrix.icon-header .comparison-matrix-banner-title {
+  font-size: var(--body-font-size-l, 16px);
+  font-weight: 800;
+  color: #1a1a1a;
+}
+
+.comparison-matrix.icon-header .comparison-matrix-banner-caption {
+  margin: 4px 0 0;
+  font-size: var(--body-font-size-xs, 12px);
+  color: #767676;
+  opacity: 1;
+}
+
+.comparison-matrix.icon-header .comparison-matrix-banner-subtitle {
+  margin: 2px 0 0;
+  font-size: var(--body-font-size-s, 13px);
+  font-weight: 700;
+  color: #1a1a1a;
+  opacity: 1;
+}
+
+@media (width >= 600px) {
+  .comparison-matrix.icon-header .comparison-matrix-grid {
+    column-gap: 0;
+  }
+
+  .comparison-matrix.icon-header .comparison-matrix-item {
+    padding-inline: var(--space-m, 16px);
+  }
+
+  .comparison-matrix.icon-header .comparison-matrix-row-label {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    justify-content: center;
+    text-align: center;
+    font-size: var(--body-font-size-xs, 12px);
+    color: #767676;
+    padding: var(--space-m, 16px) var(--space-xs, 4px);
+    background: #f4f3f3;
+  }
+}

@@ -1,0 +1,62 @@
+.chart {
+  max-width: 1200px;
+  margin-inline: auto;
+}
+
+/*
+ * The source brochure renders the two page-3 "line-multi" charts (Firewall
+ * Units Shipped / Product Revenue) inside a bordered, rounded card. Approximate
+ * that card here; the brochure's colored title bar sits in a separate sibling
+ * paragraph outside this block's markup, so it isn't reproduced here.
+ */
+.chart.line-multi {
+  border: 2px solid var(--brochure-red, #e5262a);
+  border-radius: 12px;
+  padding: 16px 12px 12px;
+  background: #fff;
+  box-sizing: border-box;
+}
+
+.chart-title {
+  text-align: center;
+  font-weight: 700;
+  font-size: 15px;
+  color: #333;
+  margin: 0 0 8px;
+}
+
+.chart-canvas-wrapper {
+  position: relative;
+  width: 100%;
+  height: 260px;
+}
+
+.chart.pie .chart-canvas-wrapper,
+.chart.donut .chart-canvas-wrapper {
+  height: 240px;
+}
+
+.chart.horizontal-bar .chart-canvas-wrapper {
+  height: 220px;
+}
+
+@media (width >= 600px) {
+  .chart-canvas-wrapper {
+    height: 340px;
+  }
+}
+
+@media (width >= 900px) {
+  .chart-canvas-wrapper {
+    height: 400px;
+  }
+
+  .chart.pie .chart-canvas-wrapper,
+  .chart.donut .chart-canvas-wrapper {
+    height: 300px;
+  }
+
+  .chart.horizontal-bar .chart-canvas-wrapper {
+    height: 280px;
+  }
+}
