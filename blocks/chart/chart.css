@@ -3,6 +3,20 @@
   margin-inline: auto;
 }
 
+/*
+ * The source brochure renders the two page-3 "line-multi" charts (Firewall
+ * Units Shipped / Product Revenue) inside a bordered, rounded card. Approximate
+ * that card here; the brochure's colored title bar sits in a separate sibling
+ * paragraph outside this block's markup, so it isn't reproduced here.
+ */
+.chart.line-multi {
+  border: 2px solid var(--brochure-red, #e5262a);
+  border-radius: 12px;
+  padding: 16px 12px 12px;
+  background: #fff;
+  box-sizing: border-box;
+}
+
 .chart-title {
   text-align: center;
   font-weight: 700;

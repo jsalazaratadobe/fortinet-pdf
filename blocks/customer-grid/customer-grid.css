@@ -9,12 +9,20 @@
  * pseudo-element to stack) we fade it toward white by layering a translucent
  * white scrim over the same image in the background-image stack. Backgrounds
  * always paint behind element content, so no z-index bookkeeping is needed.
+ *
+ * The source brochure page is essentially pure white (the map is barely a
+ * few percent darker than the page white) — a 92% scrim left this block at
+ * a flat, clearly-gray ~#ededed, which is both visibly darker than the
+ * source and made every white-background logo PNG show up as a stray white
+ * box against the gray. 97% keeps the same "faint map" intent while landing
+ * within a couple of levels of white, matching the source and letting the
+ * mix-blend-mode: multiply on the logo images below do its job.
  */
 .customer-grid {
   position: relative;
   background-color: #fff;
   background-image:
-    linear-gradient(rgb(255 255 255 / 92%), rgb(255 255 255 / 92%)),
+    linear-gradient(rgb(255 255 255 / 97%), rgb(255 255 255 / 97%)),
     url('/images/globe-bg.jpg');
   background-size: cover;
   background-position: center;
@@ -66,6 +74,15 @@
   height: auto;
   object-fit: contain;
   margin-inline: auto;
+
+  /* Every authored logo asset is a flat opaque PNG/SVG on a solid white
+     background rather than a transparent cutout. On the source brochure
+     page (pure white) that's invisible; on this block's off-white/mapped
+     background it read as a visible stray white box behind each logo.
+     Multiply blends white pixels into whatever sits behind them (so the
+     box disappears regardless of the exact background tone) while leaving
+     the logos' actual ink colors effectively unchanged. */
+  mix-blend-mode: multiply;
 }
 
 /* Caption */
@@ -84,7 +101,7 @@
   font-weight: 700;
   letter-spacing: 1px;
   text-transform: uppercase;
-  color: var(--color-muted, #666);
+  color: var(--color-ink, #333);
 }
 
 /* Tablet and up: 3x3 grid with dividers, single-column collapses to

@@ -68,8 +68,10 @@ function cellText(cell) {
 
 function buildStatBlock(label, value) {
   const stat = createTag('div', { class: 'stat-rail-stat' });
-  stat.append(createTag('p', { class: 'stat-rail-stat-value' }, value));
+  // Source PDF order is label (smaller, regular weight) above the bold value,
+  // not value-then-label.
   if (label) stat.append(createTag('p', { class: 'stat-rail-stat-label' }, label));
+  stat.append(createTag('p', { class: 'stat-rail-stat-value' }, value));
   return stat;
 }
 

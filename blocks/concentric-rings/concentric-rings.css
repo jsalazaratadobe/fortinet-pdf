@@ -5,12 +5,18 @@
  */
 
 .concentric-rings {
-  --cr-dark-red: #7a1518;
+  /*
+   * Colors sampled directly from pdf-pages/page-04.png (not reused from the
+   * page-1 venn diagram's teal/blue, which are a different, brighter pair):
+   * outer ring is a muted steel-teal (~#2a656e edge / #37838b interior), the
+   * SASE ring is a dark navy blue (~#2c4e94), not a light cyan.
+   */
+  --cr-dark-red: #8c181d;
   --cr-red: #e5262a;
-  --cr-blue: #4fa5cc;
-  --cr-blue-dark: #2f6da3;
-  --cr-teal: #2ab08f;
-  --cr-teal-dark: #1c7a63;
+  --cr-blue: #33599f;
+  --cr-blue-dark: #1f3c78;
+  --cr-teal: #3d8790;
+  --cr-teal-dark: #245b64;
 
   max-width: 900px;
   margin: 0 auto;
@@ -188,11 +194,19 @@
     background: radial-gradient(ellipse at center, var(--cr-teal) 55%, var(--cr-teal-dark) 100%);
   }
 
+  /*
+   * The source diagram's rings are NOT true concentric circles sharing one
+   * center: all four share the same vertical center line, but each ring's
+   * horizontal center shifts left as the ring gets smaller (left edges are
+   * close together, right edges fan out), leaving room on the right side of
+   * each band for its label/list. Percentages below are measured directly
+   * from pdf-pages/page-04.png against the outer ellipse's own box.
+   */
   .concentric-rings .concentric-rings-ring {
+    box-sizing: border-box;
     position: absolute;
     top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translateY(-50%);
     border-radius: 50%;
     padding: 0;
     display: flex;
@@ -201,32 +215,48 @@
   }
 
   .concentric-rings .concentric-rings-ring-sase {
-    width: 78%;
-    height: 78%;
-    background: radial-gradient(ellipse at 60% 50%, var(--cr-blue) 60%, var(--cr-blue-dark) 100%);
+    left: 1.5%;
+    width: 74%;
+    height: 68%;
+    background: radial-gradient(ellipse at 65% 40%, var(--cr-blue) 55%, var(--cr-blue-dark) 100%);
     align-items: flex-end;
     text-align: right;
-    padding-right: 8%;
+    padding-right: 6%;
   }
 
   .concentric-rings .concentric-rings-ring-networking {
-    width: 54%;
-    height: 54%;
-    background: var(--cr-red);
+    position: absolute;
+    left: 3.5%;
+    width: 47.5%;
+    height: 49.5%;
+    background: radial-gradient(ellipse at 32% 32%, #ef473f 0%, var(--cr-red) 55%, #b91c20 100%);
     align-items: flex-start;
     text-align: left;
-    padding-left: 8%;
+
+    /*
+     * The core FW/VPN ring is embedded inside this ring's left portion, so
+     * the label/list column has to start clear of it. Padding percentages
+     * resolve against the diagram (this ring's containing block), not this
+     * ring's own width, so 19% here ≈ 38% of this ring's own (47.5%-wide) box
+     * - just enough to clear the core circle, which ends at ~22% of the
+     * diagram width.
+     */
+    padding-left: 19%;
+    padding-right: 70px;
+    box-shadow: 0 0 0 5px rgb(255 255 255 / 22%);
   }
 
   .concentric-rings .concentric-rings-ring-core {
-    width: 26%;
-    height: 26%;
+    left: 4.8%;
+    width: 17%;
+    height: 29%;
     background: var(--cr-dark-red);
     align-items: center;
     justify-content: center;
     text-align: center;
     max-width: none;
     margin: 0;
+    box-shadow: 0 0 0 5px rgb(255 255 255 / 22%);
   }
 
   .concentric-rings .concentric-rings-ring-label {
@@ -250,8 +280,44 @@
     font-weight: 600;
   }
 
-  .concentric-rings .concentric-rings-badge {
-    margin-top: 12px;
+  /*
+   * In the source diagram the "Quantum Safe" badge is a circular icon with
+   * its caption underneath, sitting beside (not below) the feature list.
+   * Pull it out of flow so the list keeps its own left-aligned column.
+   */
+  .concentric-rings .concentric-rings-ring-networking .concentric-rings-badge {
+    position: absolute;
+    right: 8%;
+    top: 50%;
+    transform: translateY(-50%);
+    margin-top: 0;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border-radius: 0;
+    padding: 0;
+    width: 74px;
+    font-size: 11px;
+    font-weight: 700;
+    text-align: center;
+    white-space: normal;
+    line-height: 1.2;
+  }
+
+  .concentric-rings .concentric-rings-badge-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    border: 1.5px solid rgb(255 255 255 / 70%);
+  }
+
+  .concentric-rings .concentric-rings-badge-icon svg {
+    width: 24px;
+    height: 24px;
   }
 
   .concentric-rings .concentric-rings-band-label {
@@ -271,27 +337,46 @@
     bottom: 2%;
   }
 
+  /*
+   * The rim icon clusters sit only in the right portion of the teal ring
+   * (to the right of the AI/SECURITY OPERATIONS band labels), cascading
+   * outward. They must stay within the ellipse's curve, so each item gets an
+   * explicit top/bottom offset (not an even spread across the full width -
+   * the previous full-width layout placed the first/last items outside the
+   * visible ellipse, in the rectangular corner past the curve, where white
+   * text on white page background made them invisible).
+   */
   .concentric-rings .concentric-rings-rim {
     position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
     flex-wrap: nowrap;
     gap: 4px;
   }
 
+  /*
+   * Explicit height (rather than auto) on these two rows is required so the
+   * child items' percentage top/bottom offsets below resolve against a
+   * definite containing-block height instead of being treated as invalid/0.
+   */
   .concentric-rings .concentric-rings-rim-top {
-    top: 9%;
-    width: 92%;
+    left: 52%;
+    top: 6%;
+    width: 44%;
+    height: 48%;
     justify-content: space-between;
+    align-items: flex-start;
   }
 
   .concentric-rings .concentric-rings-rim-bottom {
-    bottom: 9%;
-    width: 60%;
-    justify-content: space-around;
+    left: 52%;
+    bottom: 6%;
+    width: 40%;
+    height: 44%;
+    justify-content: space-between;
+    align-items: flex-end;
   }
 
   .concentric-rings .concentric-rings-rim-item {
+    position: relative;
     flex-direction: column;
     align-items: center;
     gap: 4px;
@@ -301,10 +386,91 @@
     color: #fff;
   }
 
+  .concentric-rings .concentric-rings-rim-top .concentric-rings-rim-item:nth-child(1) {
+    top: 12.5%;
+  }
+
+  .concentric-rings .concentric-rings-rim-top .concentric-rings-rim-item:nth-child(2) {
+    top: 27%;
+  }
+
+  .concentric-rings .concentric-rings-rim-top .concentric-rings-rim-item:nth-child(3) {
+    top: 44%;
+  }
+
+  .concentric-rings .concentric-rings-rim-top .concentric-rings-rim-item:nth-child(4) {
+    top: 65%;
+  }
+
+  .concentric-rings .concentric-rings-rim-top .concentric-rings-rim-item:nth-child(5) {
+    top: 90%;
+  }
+
+  .concentric-rings .concentric-rings-rim-bottom .concentric-rings-rim-item:nth-child(1) {
+    bottom: 18%;
+  }
+
+  .concentric-rings .concentric-rings-rim-bottom .concentric-rings-rim-item:nth-child(2) {
+    bottom: 39%;
+  }
+
+  .concentric-rings .concentric-rings-rim-bottom .concentric-rings-rim-item:nth-child(3) {
+    bottom: 66%;
+  }
+
+  /*
+   * The source diagram has no full-width divider between "2000" and "2026" -
+   * instead each year has its own short vertical tick + dot dropping from the
+   * ellipse's left/right edge. Hide the connecting line and fake the ticks
+   * with pseudo-elements on the year labels instead, spanning the full width
+   * so the ticks land under the ellipse's actual left/right edges.
+   */
   .concentric-rings .concentric-rings-timeline {
-    max-width: 90%;
-    margin-inline: auto;
+    position: relative;
+    justify-content: space-between;
+    max-width: 100%;
+    margin-inline: 0;
     margin-top: var(--space-xl, 32px);
+  }
+
+  .concentric-rings .concentric-rings-timeline-line {
+    display: none;
+  }
+
+  .concentric-rings .concentric-rings-timeline-year {
+    position: relative;
+    padding-top: 20px;
+  }
+
+  .concentric-rings .concentric-rings-timeline-year::before {
+    content: '';
+    position: absolute;
+    top: -16px;
+    left: 0;
+    width: 1px;
+    height: 16px;
+    background: #999;
+  }
+
+  .concentric-rings .concentric-rings-timeline-year::after {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: -3px;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #999;
+  }
+
+  .concentric-rings .concentric-rings-timeline-end::before,
+  .concentric-rings .concentric-rings-timeline-end::after {
+    left: auto;
+    right: 0;
+  }
+
+  .concentric-rings .concentric-rings-timeline-end::after {
+    right: -3px;
   }
 }
 

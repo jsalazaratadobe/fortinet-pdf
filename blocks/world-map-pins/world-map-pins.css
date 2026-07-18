@@ -22,7 +22,7 @@
 }
 
 .world-map-pins-stat {
-  background: #da291c;
+  background: #ee2722;
   color: #fff;
   border-radius: 6px;
   padding: var(--space-m);
@@ -130,28 +130,62 @@
 }
 
 .world-map-pins-dot {
-  width: 7px;
-  height: 7px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
   flex-shrink: 0;
   box-shadow: 0 0 0 1.5px rgb(255 255 255 / 90%);
 }
 
-.world-map-pins-marker-dc .world-map-pins-dot { background: #da291c; }
+/* Dot size/stacking follows the source's visual weight: Fortinet-owned data
+   centers read as the largest, most prominent dots; public cloud regions
+   as the smallest. */
+.world-map-pins-marker-dc {
+  z-index: 3;
+}
 
-.world-map-pins-marker-colo .world-map-pins-dot { background: #2666b5; }
+.world-map-pins-marker-dc .world-map-pins-dot {
+  width: 9px;
+  height: 9px;
+  background: #ee2722;
+}
+
+.world-map-pins-marker-colo {
+  z-index: 2;
+}
+
+.world-map-pins-marker-colo .world-map-pins-dot {
+  width: 7px;
+  height: 7px;
+  background: #2666b5;
+}
+
+.world-map-pins-marker-cloud {
+  z-index: 1;
+}
 
 .world-map-pins-marker-cloud .world-map-pins-dot { background: #8a8a8a; }
 
 .world-map-pins-city {
   display: none;
-  font-size: 8px;
-  font-weight: 600;
-  color: #333;
+  flex-direction: column;
+  line-height: 1.25;
   white-space: nowrap;
   background: rgb(255 255 255 / 85%);
   padding: 0 3px;
   border-radius: 2px;
+}
+
+.world-map-pins-city-name {
+  font-size: 8px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.world-map-pins-city-region {
+  font-size: 7px;
+  font-weight: 500;
+  color: #767676;
 }
 
 /* Legend */
@@ -180,7 +214,7 @@
   flex-shrink: 0;
 }
 
-.world-map-pins-legend-dot-dc { background: #da291c; }
+.world-map-pins-legend-dot-dc { background: #ee2722; }
 
 .world-map-pins-legend-dot-colo { background: #2666b5; }
 

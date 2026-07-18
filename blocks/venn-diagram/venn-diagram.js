@@ -19,29 +19,39 @@
 /* -------------------------------------------------------------------- */
 
 const VIEW_W = 1200;
-const VIEW_H = 760;
-const R = 300; // circle radius
-const LEFT_CX = 420; // networking circle center x
-const RIGHT_CX = 760; // security circle center x
-const CY = 420; // shared circle center y
-const HALO = 16; // soft outer ring thickness
+const VIEW_H = 860;
+// The source PDF's two circles are NOT equal size - pixel measurement of the
+// source (see PR notes) gives radius ratio security:networking ~= 1.26, with
+// center-to-center distance ~1.47x the networking radius. Reproduce that
+// asymmetry (and the resulting label-height offset it causes) exactly rather
+// than the equal-circle approximation this block started with.
+const R_LEFT = 270; // networking circle radius
+const R_RIGHT = 340; // security circle radius (bigger, matches source PDF)
+const CX_DISTANCE = 400; // center-to-center distance
+const LEFT_CX = 365; // networking circle center x
+const RIGHT_CX = LEFT_CX + CX_DISTANCE; // security circle center x
+const CY = 468; // shared circle center y
+const HALO_GAP = 16; // gap between circle edge and the soft halo ring
+const HALO_RING = 7; // halo ring stroke thickness
 
 /** Half-width of a circle of radius r at vertical offset dy from its center. */
-function halfWidthAt(dy, r = R) {
+function halfWidthAt(dy, r) {
   const v = (r * r) - (dy * dy);
   return v > 0 ? Math.sqrt(v) : 0;
 }
 
 /** X-range of the circle-only ("pure") band on one side, at a given dy from CY. */
 function pureBand(dy, side) {
-  const w = halfWidthAt(dy);
-  return side === 'left' ? [LEFT_CX - w, RIGHT_CX - w] : [LEFT_CX + w, RIGHT_CX + w];
+  const wLeft = halfWidthAt(dy, R_LEFT);
+  const wRight = halfWidthAt(dy, R_RIGHT);
+  return side === 'left' ? [LEFT_CX - wLeft, RIGHT_CX - wRight] : [LEFT_CX + wLeft, RIGHT_CX + wRight];
 }
 
 /** X-range of the overlap (lens) band at a given dy from CY. */
 function overlapBand(dy) {
-  const w = halfWidthAt(dy);
-  return [RIGHT_CX - w, LEFT_CX + w];
+  const wLeft = halfWidthAt(dy, R_LEFT);
+  const wRight = halfWidthAt(dy, R_RIGHT);
+  return [RIGHT_CX - wRight, LEFT_CX + wLeft];
 }
 
 /** Evenly space `count` column centers inside [start, end], inset by `pad`. */
@@ -56,15 +66,18 @@ function columnsInBand([start, end], count, pad) {
 /* Content (hardcoded — pure decoration, per "David's Model")            */
 /* -------------------------------------------------------------------- */
 
+// Row dy offsets below are scaled to each circle's own radius (0.9x for the
+// smaller networking circle, ~1.13x for the bigger security circle) so the
+// icon grids fill their circle proportionally regardless of R_LEFT/R_RIGHT.
 const NETWORKING_ROWS = [
-  { dy: -140, items: [{ icon: 'router', label: 'Router' }] },
+  { dy: -126, items: [{ icon: 'router', label: 'Router' }] },
   { dy: 0, items: [{ icon: 'switch', label: 'Switch' }, { icon: 'wifi', label: 'Wi-Fi' }] },
-  { dy: 140, items: [{ icon: 'sdwan', label: 'SD-WAN' }, { icon: 'fiveg', label: '5G' }] },
+  { dy: 126, items: [{ icon: 'sdwan', label: 'SD-WAN' }, { icon: 'fiveg', label: '5G' }] },
 ];
 
 const SECURITY_ROWS = [
   {
-    dy: -150,
+    dy: -170,
     items: [
       { icon: 'firewall', label: 'Firewall' },
       { icon: 'ssl', label: 'SSL' },
@@ -73,7 +86,7 @@ const SECURITY_ROWS = [
     ],
   },
   {
-    dy: -50,
+    dy: -57,
     items: [
       { icon: 'inlinemps', label: 'Inline MPS' },
       { icon: 'ips', label: 'IPS' },
@@ -82,7 +95,7 @@ const SECURITY_ROWS = [
     ],
   },
   {
-    dy: 50,
+    dy: 57,
     items: [
       { icon: 'antimalware', label: 'Anti-Malware' },
       { icon: 'attacksurface', label: 'Attack Surface Security' },
@@ -91,7 +104,7 @@ const SECURITY_ROWS = [
     ],
   },
   {
-    dy: 150,
+    dy: 170,
     items: [
       { icon: 'sandbox', label: 'Sandbox' },
       { icon: 'swg', label: 'SWG' },
@@ -102,9 +115,9 @@ const SECURITY_ROWS = [
 ];
 
 const OVERLAP_ROWS = [
-  { dy: -140, items: [{ icon: 'os', label: 'Single OS' }] },
+  { dy: -126, items: [{ icon: 'os', label: 'Single OS' }] },
   { dy: 0, items: [{ icon: 'asic', label: 'ASIC' }, { icon: 'fortiguard', label: 'FortiGuard' }] },
-  { dy: 140, items: [{ icon: 'quantum', label: 'Quantum Safe' }] },
+  { dy: 126, items: [{ icon: 'quantum', label: 'Quantum Safe' }] },
 ];
 
 /* -------------------------------------------------------------------- */
@@ -195,9 +208,24 @@ function buildGrid(rows, side, iconSize, fontSize, pad) {
 }
 
 function buildSvgMarkup() {
-  const networkingGrid = buildGrid(NETWORKING_ROWS, 'left', 36, 17, 45);
-  const securityGrid = buildGrid(SECURITY_ROWS, 'right', 26, 13, 45);
-  const overlapGrid = buildGrid(OVERLAP_ROWS, 'overlap', 32, 15, 30);
+  // Padding here has to clear not just the icon at its row's dy, but the
+  // label text sitting below it - closer to the circle's pole, where the
+  // circle has already narrowed - so it's larger than the icon's own margin
+  // would suggest, sized for the longest one-line labels ("SD-WAN", "Cloud
+  // Security"'s wrapped lines, etc.) at each grid's font size.
+  const networkingGrid = buildGrid(NETWORKING_ROWS, 'left', 32, 15, 66);
+  const securityGrid = buildGrid(SECURITY_ROWS, 'right', 30, 14, 62);
+  const overlapGrid = buildGrid(OVERLAP_ROWS, 'overlap', 30, 14, 44);
+
+  // Each label sits a fixed gap above its OWN circle's top edge (including the
+  // halo), so the size difference between the two circles naturally produces
+  // the same label-height offset seen in the source (SECURITY sits higher
+  // than NETWORKING because its circle is bigger).
+  const haloExtra = HALO_GAP + HALO_RING;
+  const leftLabelY = CY - R_LEFT - haloExtra - 30;
+  const rightLabelY = CY - R_RIGHT - haloExtra - 30;
+  const inlineLabelX = RIGHT_CX + (0.12 * R_RIGHT);
+  const inlineLabelY = CY - (0.73 * R_RIGHT);
 
   return `
     <defs>
@@ -206,15 +234,15 @@ function buildSvgMarkup() {
         <stop offset="0" stop-color="#2ab08f"/>
         <stop offset="1" stop-color="#4fa5cc"/>
       </linearGradient>
-      <clipPath id="vd-clip-left"><circle cx="${LEFT_CX}" cy="${CY}" r="${R}"/></clipPath>
-      <clipPath id="vd-clip-right"><circle cx="${RIGHT_CX}" cy="${CY}" r="${R}"/></clipPath>
+      <clipPath id="vd-clip-left"><circle cx="${LEFT_CX}" cy="${CY}" r="${R_LEFT}"/></clipPath>
+      <clipPath id="vd-clip-right"><circle cx="${RIGHT_CX}" cy="${CY}" r="${R_RIGHT}"/></clipPath>
     </defs>
 
-    <circle class="venn-circle-halo" cx="${LEFT_CX}" cy="${CY}" r="${R + HALO}"></circle>
-    <circle class="venn-circle-halo" cx="${RIGHT_CX}" cy="${CY}" r="${R + HALO}"></circle>
+    <circle class="venn-circle-halo" cx="${LEFT_CX}" cy="${CY}" r="${R_LEFT + HALO_GAP + (HALO_RING / 2)}"></circle>
+    <circle class="venn-circle-halo" cx="${RIGHT_CX}" cy="${CY}" r="${R_RIGHT + HALO_GAP + (HALO_RING / 2)}"></circle>
 
-    <circle class="venn-circle-left" cx="${LEFT_CX}" cy="${CY}" r="${R}"></circle>
-    <circle class="venn-circle-right" cx="${RIGHT_CX}" cy="${CY}" r="${R}"></circle>
+    <circle class="venn-circle-left" cx="${LEFT_CX}" cy="${CY}" r="${R_LEFT}"></circle>
+    <circle class="venn-circle-right" cx="${RIGHT_CX}" cy="${CY}" r="${R_RIGHT}"></circle>
 
     <g clip-path="url(#vd-clip-left)">
       <g clip-path="url(#vd-clip-right)">
@@ -222,9 +250,9 @@ function buildSvgMarkup() {
       </g>
     </g>
 
-    <text class="venn-label-external" x="${LEFT_CX}" y="72" text-anchor="middle" font-size="32">NETWORKING</text>
-    <text class="venn-label-external" x="${RIGHT_CX}" y="72" text-anchor="middle" font-size="32">SECURITY</text>
-    <text class="venn-label-inline" x="795" y="200" text-anchor="middle" font-size="24">SASE FIREWALL</text>
+    <text class="venn-label-external" x="${LEFT_CX}" y="${leftLabelY}" text-anchor="middle" font-size="32">NETWORKING</text>
+    <text class="venn-label-external" x="${RIGHT_CX}" y="${rightLabelY}" text-anchor="middle" font-size="32">SECURITY</text>
+    <text class="venn-label-inline" x="${inlineLabelX}" y="${inlineLabelY}" text-anchor="middle" font-size="24">SASE FIREWALL</text>
 
     ${networkingGrid}
     ${securityGrid}

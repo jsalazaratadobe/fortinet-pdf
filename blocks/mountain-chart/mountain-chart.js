@@ -41,10 +41,11 @@ const TAM = {
   // thin sliver up top) rather than capped at ~1/3 — this dataset follows
   // the image's visual read since fidelity to the source shape was the goal.
   redShare: [0.02, 0.05, 0.10, 0.18, 0.28, 0.42, 0.58, 0.72],
+  // Swatch colors sampled directly from the legend dots in page-06.png.
   legend: [
-    { color: '#3cb17e', label: 'Total Addressable Market' },
-    { color: '#a9d9ef', label: 'Multi Point Solution' },
-    { color: '#da291c', label: 'Single OS Integrated Solution' },
+    { color: '#46b775', label: 'Total Addressable Market' },
+    { color: '#ade0ec', label: 'Multi Point Solution' },
+    { color: '#e12923', label: 'Single OS Integrated Solution' },
   ],
   // Generic placeholder company-name chips (plain text, not real logos —
   // source logos are unlicensed/illegible) scattered above the curve.
@@ -109,6 +110,24 @@ function buildLegend(items) {
   return list;
 }
 
+function buildOsBadge() {
+  // "OS" roundel that anchors the left end of the Journey timeline (page-06,
+  // Fortinet Journey chart only - the TAM chart has no equivalent badge).
+  const badge = createTag('div', { class: 'mountain-chart-os-badge', 'aria-hidden': 'true' });
+  badge.append(createTag('span', { class: 'mountain-chart-os-badge-text' }, 'OS'));
+  const iconWrap = createTag('span', { class: 'mountain-chart-os-badge-icon' });
+  iconWrap.innerHTML = icon('grid');
+  badge.append(iconWrap);
+  return badge;
+}
+
+function icon(name) {
+  if (name === 'grid') {
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>';
+  }
+  return '';
+}
+
 function buildTimeline(categories, eraLines) {
   const wrap = createTag('div', { class: 'mountain-chart-timeline' });
   categories.forEach((cat, i) => {
@@ -162,8 +181,9 @@ function buildTamConfig() {
         {
           label: 'Single OS Integrated Solution',
           data: redValues,
-          borderColor: '#da291c',
-          backgroundColor: 'rgb(218 41 28 / 92%)',
+          // Colors sampled from the legend swatches in pdf-pages/page-06.png.
+          borderColor: '#e12923',
+          backgroundColor: 'rgb(225 41 35 / 92%)',
           fill: 'origin',
           stack: 'tam',
           pointRadius: 0,
@@ -173,13 +193,33 @@ function buildTamConfig() {
         {
           label: 'Multi Point Solution',
           data: blueValues,
-          borderColor: '#8fc9e8',
-          backgroundColor: 'rgb(169 217 239 / 92%)',
+          borderColor: '#ade0ec',
+          backgroundColor: 'rgb(173 224 236 / 92%)',
           fill: '-1',
           stack: 'tam',
           pointRadius: 0,
           borderWidth: 2,
           tension: 0.4,
+        },
+        {
+          // The source diagram traces the whole stack's outer boundary with a
+          // thin green line, matching the "Total Addressable Market" legend
+          // swatch - the previous version had that legend entry with nothing
+          // on the canvas to back it up. Deliberately left out of the `tam`
+          // stack group since it's a boundary outline, not another filled
+          // layer. Chart.js draws lower `order` values last/on top, so
+          // without this it renders *underneath* the opaque red/blue fills
+          // and is invisible - order must be explicitly below their default
+          // of 0.
+          label: 'Total Addressable Market',
+          data: totals,
+          borderColor: '#46b775',
+          backgroundColor: 'transparent',
+          fill: false,
+          pointRadius: 0,
+          borderWidth: 2,
+          tension: 0.4,
+          order: -1,
         },
       ],
     },
@@ -218,10 +258,13 @@ function buildJourneyConfig() {
       labels: categories,
       datasets: [
         {
+          // Colors sampled from pdf-pages/page-06.png Journey chart
+          // (Firewall layer measures ~#ed1c24, more saturated than the
+          // previous #d5382c).
           label: 'Firewall',
           data: firewall,
-          borderColor: '#c9241c',
-          backgroundColor: '#d5382c',
+          borderColor: '#c41d1d',
+          backgroundColor: '#ec2124',
           fill: 'origin',
           stack: 'journey',
           pointRadius: 0,
@@ -231,8 +274,8 @@ function buildJourneyConfig() {
         {
           label: 'SD-WAN',
           data: sdwan,
-          borderColor: '#e8776b',
-          backgroundColor: '#e8776b',
+          borderColor: '#ee7267',
+          backgroundColor: '#ee7267',
           fill: '-1',
           stack: 'journey',
           pointRadius: 0,
@@ -242,8 +285,8 @@ function buildJourneyConfig() {
         {
           label: 'SASE',
           data: sase,
-          borderColor: '#f3b8ae',
-          backgroundColor: '#f3b8ae',
+          borderColor: '#f4b3a8',
+          backgroundColor: '#f4b3a8',
           fill: '-1',
           stack: 'journey',
           pointRadius: 0,
@@ -289,8 +332,12 @@ export default async function decorate(block) {
     canvasWrapper.append(createTag('span', { class: 'mountain-chart-brand', 'aria-hidden': 'true' }, 'FORTINET'));
   }
 
+  const timelineRow = createTag('div', { class: 'mountain-chart-timeline-row' });
+  if (isJourney) timelineRow.append(buildOsBadge());
+  timelineRow.append(buildTimeline(dataset.categories, dataset.eraLines));
+
   const main = createTag('div', { class: 'mountain-chart-main' });
-  main.append(canvasWrapper, buildTimeline(dataset.categories, dataset.eraLines));
+  main.append(canvasWrapper, timelineRow);
 
   const inner = createTag('div', { class: 'mountain-chart-inner' });
   if (isJourney) {

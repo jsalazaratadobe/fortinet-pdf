@@ -93,8 +93,20 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: -16px;
   z-index: 1;
+}
+
+.hub-spoke-center-badge-top {
+  margin-bottom: -16px;
+}
+
+.hub-spoke-center-badge-bottom {
+  margin-top: -16px;
+}
+
+.hub-spoke-center-badge-bottom svg {
+  width: 16px;
+  height: 16px;
 }
 
 .hub-spoke-center-circle {
@@ -141,6 +153,13 @@
   color: #fff;
   border-radius: 10px;
   padding: var(--space-m) var(--space-s);
+}
+
+/* Mobile/tablet: the body wrapper doesn't need its own box — its child (the
+   text block) just joins the column flex layout directly. Desktop swaps
+   this to a real, colored, chevron-clipped box (see the 900px+ section). */
+.hub-spoke-box-body {
+  display: contents;
 }
 
 .hub-spoke-box-icon {
@@ -275,15 +294,46 @@
 
   .hub-spoke-box {
     flex-direction: row;
+    align-items: center;
     text-align: left;
-    gap: 10px;
-    padding: 12px 16px;
-    border-radius: 8px;
+    gap: 0;
+    padding: 0;
+    border-radius: 0;
+    background: none;
+    overflow: visible;
   }
 
   .hub-spoke-box-right {
     flex-direction: row-reverse;
     text-align: right;
+  }
+
+  /* The colored, chevron-clipped box lives on this inner wrapper (not on
+     `.hub-spoke-box` itself) so the overlapping icon circle — a flex
+     sibling, not a descendant — isn't clipped along with it. The pointed
+     tip faces the center circle, matching the source brochure's
+     arrow-shaped spoke boxes. */
+  .hub-spoke-box-body {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    min-width: 0;
+    background: var(--hub-spoke-color, #1a9b8f);
+    color: #fff;
+    padding: 12px 16px;
+  }
+
+  .hub-spoke-box-left .hub-spoke-box-body {
+    clip-path: polygon(0 0, 88% 0, 100% 50%, 88% 100%, 0 100%);
+    padding-left: 24px;
+    padding-right: 32px;
+  }
+
+  .hub-spoke-box-right .hub-spoke-box-body {
+    clip-path: polygon(12% 0, 100% 0, 100% 100%, 12% 100%, 0 50%);
+    justify-content: flex-end;
+    padding-left: 32px;
+    padding-right: 24px;
   }
 
   .hub-spoke-box-text strong {
@@ -294,23 +344,42 @@
     font-size: 11px;
   }
 
-  /* Thin connector line from each box toward the center circle */
+  /* Icon circle overlaps the body's outer edge, with a colored halo ring
+     around the white circle — matching the source brochure. */
+  .hub-spoke-box-icon {
+    box-shadow: 0 0 0 3px var(--hub-spoke-color, #1a9b8f);
+    position: relative;
+    z-index: 1;
+  }
+
+  .hub-spoke-box-left .hub-spoke-box-icon {
+    margin-right: -16px;
+  }
+
+  .hub-spoke-box-right .hub-spoke-box-icon {
+    margin-left: -16px;
+  }
+
+  /* Solid colored connector (matching the box's own tone, fading toward the
+     center) from each box toward the center circle, instead of a thin gray
+     hairline — matching the source brochure's ribbon-style connectors. */
   .hub-spoke-box-line {
     display: block;
     position: absolute;
     top: 50%;
     width: 48px;
-    height: 2px;
-    background: #9996;
+    height: 10px;
     transform: translateY(-50%);
   }
 
   .hub-spoke-box-left .hub-spoke-box-line {
     left: 100%;
+    background: linear-gradient(to right, var(--hub-spoke-color, #1a9b8f), transparent);
   }
 
   .hub-spoke-box-right .hub-spoke-box-line {
     right: 100%;
+    background: linear-gradient(to left, var(--hub-spoke-color, #1a9b8f), transparent);
   }
 }
 

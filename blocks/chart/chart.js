@@ -1,6 +1,13 @@
 import { loadChartJs, createChart, createTag } from '../../scripts/shared.js';
 
-const DEFAULT_PALETTE = ['#e5262a', '#2ab08f', '#4fa5cc', '#1c2b4a', '#f5a623', '#7b2d8b', '#666'];
+// 14-color sequence matched (via pixel sampling of the source PDF) to the one
+// chart in this brochure that has no authored `colors` control row (the 14
+// -category "Billings by Vertical" pie): index 0-6 are also used as the
+// general small-N fallback palette for any other uncoloured chart.
+const DEFAULT_PALETTE = [
+  '#46b876', '#8155b0', '#25563c', '#61389d', '#5cc8ca', '#88d5a4', '#a4b2ca',
+  '#6680aa', '#264994', '#3e9c9f', '#4d76c4', '#243f78', '#db2624', '#691716',
+];
 
 /**
  * Parse the authored table rows into headers/data, pulling out an optional
@@ -37,16 +44,134 @@ function toNumber(value) {
 function buildSeries(header, dataRows) {
   const categories = dataRows.map((row) => row[0]);
   const seriesNames = header.slice(1);
-  const series = seriesNames.map((name, i) => ({
-    name,
-    isPercent: /%/.test(name),
-    values: dataRows.map((row) => toNumber(row[i + 1])),
-  }));
+  const series = seriesNames.map((name, i) => {
+    const values = dataRows.map((row) => toNumber(row[i + 1]));
+    // A series is treated as a percentage series either when its header says
+    // so (e.g. "GAAP Operating Margin %") or - since several authored charts
+    // share the exact same "Year | Company | Company | Company" header shape
+    // for both percentage-share data and dollar data - when every value in
+    // the series already looks like a plausible percentage (0-100).
+    const isPercent = /%/.test(name) || (values.length > 0 && values.every((v) => v >= 0 && v <= 100));
+    return { name, isPercent, values };
+  });
   return { categories, series };
 }
 
 function baseFont() {
   return { family: 'Inter, sans-serif', size: 12 };
+}
+
+function formatByUnit(value, isPercent) {
+  return isPercent ? `${value}%` : `$${Number(value).toLocaleString()}`;
+}
+
+/**
+ * Small self-contained Chart.js plugins (registered per-chart via
+ * `config.plugins`, not globally) that draw the direct-on-chart value/percent
+ * labels the source PDF uses throughout instead of relying on hover tooltips.
+ */
+function barValueLabelsPlugin() {
+  return {
+    id: 'brochureBarLabels',
+    afterDatasetsDraw(chart) {
+      const { ctx } = chart;
+      const meta = chart.getDatasetMeta(0);
+      const { data } = chart.data.datasets[0];
+      ctx.save();
+      ctx.font = '700 11px Inter, sans-serif';
+      ctx.fillStyle = '#555';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'bottom';
+      meta.data.forEach((el, i) => {
+        const value = data[i];
+        if (value === undefined || value === null) return;
+        ctx.fillText(`$${Number(value).toLocaleString()}`, el.x, el.y - 4);
+      });
+      ctx.restore();
+    },
+  };
+}
+
+function lineValueLabelsPlugin() {
+  return {
+    id: 'brochureLineLabels',
+    afterDatasetsDraw(chart) {
+      const { ctx } = chart;
+      ctx.save();
+      ctx.font = '700 10px Inter, sans-serif';
+      ctx.textAlign = 'center';
+      chart.data.datasets.forEach((ds, dsIndex) => {
+        if (ds.type && ds.type !== 'line') return;
+        const meta = chart.getDatasetMeta(dsIndex);
+        if (meta.hidden) return;
+        ctx.fillStyle = ds.borderColor || '#333';
+        meta.data.forEach((el, i) => {
+          const value = ds.data[i];
+          if (value === undefined || value === null) return;
+          ctx.textBaseline = 'bottom';
+          ctx.fillText(formatByUnit(value, ds._isPercent), el.x, el.y - 8);
+        });
+      });
+      ctx.restore();
+    },
+  };
+}
+
+function hbarValueLabelsPlugin() {
+  return {
+    id: 'brochureHbarLabels',
+    afterDatasetsDraw(chart) {
+      const { ctx } = chart;
+      const meta = chart.getDatasetMeta(0);
+      const { data } = chart.data.datasets[0];
+      ctx.save();
+      ctx.font = '700 12px Inter, sans-serif';
+      ctx.fillStyle = '#1a1a1a';
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'middle';
+      meta.data.forEach((el, i) => {
+        const value = data[i];
+        if (value === undefined || value === null) return;
+        ctx.fillText(Number(value).toLocaleString(), el.x + 8, el.y);
+      });
+      ctx.restore();
+    },
+  };
+}
+
+function pieValueLabelsPlugin() {
+  return {
+    id: 'brochurePieLabels',
+    afterDatasetsDraw(chart) {
+      const { ctx } = chart;
+      const meta = chart.getDatasetMeta(0);
+      const { data } = chart.data.datasets[0];
+      const total = data.reduce((a, b) => a + b, 0);
+      if (!total) return;
+      ctx.save();
+      ctx.font = '700 12px Inter, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = 'rgba(0, 0, 0, 0.35)';
+      ctx.fillStyle = '#fff';
+      meta.data.forEach((arc, i) => {
+        const value = data[i];
+        const pct = Math.round((value / total) * 100);
+        // Skip tiny slivers - the source brochure calls these out with an
+        // external leader-line label instead of cramming text into the arc.
+        if (pct < 3) return;
+        const angle = (arc.startAngle + arc.endAngle) / 2;
+        const radius = (arc.innerRadius + arc.outerRadius) / 2;
+        const x = arc.x + (Math.cos(angle) * radius);
+        const y = arc.y + (Math.sin(angle) * radius);
+        const label = `${pct}%`;
+        ctx.strokeText(label, x, y);
+        ctx.fillText(label, x, y);
+      });
+      ctx.restore();
+    },
+  };
 }
 
 function buildBarLineConfig(categories, series, colors) {
@@ -62,7 +187,6 @@ function buildBarLineConfig(categories, series, colors) {
           backgroundColor: colors[0] || '#c3d3ef',
           borderRadius: 2,
           yAxisID: 'y',
-          order: 2,
         },
         {
           type: 'line',
@@ -74,14 +198,16 @@ function buildBarLineConfig(categories, series, colors) {
           pointRadius: 4,
           tension: 0.35,
           yAxisID: 'y1',
-          order: 1,
+          _isPercent: true,
         },
       ],
     },
+    plugins: [barValueLabelsPlugin(), lineValueLabelsPlugin()],
     options: {
       responsive: true,
       maintainAspectRatio: false,
       interaction: { mode: 'index', intersect: false },
+      layout: { padding: { top: 20 } },
       plugins: {
         legend: { position: 'bottom', labels: { font: baseFont(), usePointStyle: true } },
         tooltip: { enabled: true },
@@ -94,6 +220,8 @@ function buildBarLineConfig(categories, series, colors) {
         },
         y1: {
           position: 'right',
+          min: 0,
+          max: 45,
           ticks: { callback: (v) => `${v}%`, font: baseFont() },
           grid: { display: false },
         },
@@ -105,6 +233,7 @@ function buildBarLineConfig(categories, series, colors) {
 
 function buildLineMultiConfig(categories, series, colors) {
   return {
+    type: 'line',
     data: {
       labels: categories,
       datasets: series.map((s, i) => ({
@@ -115,11 +244,14 @@ function buildLineMultiConfig(categories, series, colors) {
         pointRadius: 3,
         tension: 0.3,
         fill: false,
+        _isPercent: s.isPercent,
       })),
     },
+    plugins: [lineValueLabelsPlugin()],
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      layout: { padding: { top: 18 } },
       plugins: {
         legend: { position: 'bottom', labels: { font: baseFont(), usePointStyle: true } },
       },
@@ -146,15 +278,18 @@ function buildHorizontalBarConfig(categories, series, colors) {
         data: series[0].values,
         backgroundColor: categories.map((_, i) => colors[i] || DEFAULT_PALETTE[i] || DEFAULT_PALETTE[DEFAULT_PALETTE.length - 1]),
         borderRadius: 2,
+        barPercentage: 0.6,
       }],
     },
+    plugins: [hbarValueLabelsPlugin()],
     options: {
       indexAxis: 'y',
       responsive: true,
       maintainAspectRatio: false,
+      layout: { padding: { right: 60 } },
       plugins: { legend: { display: false } },
       scales: {
-        x: { ticks: { font: baseFont() }, grid: { color: '#eee' } },
+        x: { display: false, grid: { display: false } },
         y: { ticks: { font: baseFont() }, grid: { display: false } },
       },
     },
@@ -173,12 +308,21 @@ function buildPieDonutConfig(type, categories, series, colors) {
         borderWidth: 2,
       }],
     },
+    plugins: [pieValueLabelsPlugin()],
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      cutout: type === 'donut' ? '65%' : undefined,
+      cutout: type === 'doughnut' ? '65%' : undefined,
       plugins: {
-        legend: { position: 'right', labels: { font: baseFont(), boxWidth: 12, usePointStyle: true } },
+        // The source brochure only shows a side legend for the plain "pie"
+        // instances (Q1 2026 revenue/billings breakdowns); every "donut"
+        // instance instead relies on inline slice labels / external captions
+        // authored around the chart, with no on-chart legend.
+        legend: {
+          display: type !== 'doughnut',
+          position: 'right',
+          labels: { font: baseFont(), boxWidth: 12, usePointStyle: true },
+        },
         tooltip: {
           callbacks: {
             label(ctx) {
@@ -226,15 +370,17 @@ export default async function decorate(block) {
           backgroundColor: colors[0] || DEFAULT_PALETTE[0],
         }],
       },
+      plugins: [barValueLabelsPlugin()],
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        layout: { padding: { top: 20 } },
         plugins: { legend: { display: false } },
         scales: { x: { grid: { display: false } }, y: { grid: { color: '#eee' } } },
       },
     };
   }
-  if (!config.type) config.type = isBarLine ? 'bar' : 'bar';
+  if (!config.type) config.type = isLineMulti ? 'line' : 'bar';
 
   const wrapper = createTag('div', { class: 'chart-canvas-wrapper' });
   const canvas = createTag('canvas', { role: 'img', 'aria-label': title || header.slice(1).join(', ') });

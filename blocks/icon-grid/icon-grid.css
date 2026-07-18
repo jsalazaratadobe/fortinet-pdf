@@ -1,34 +1,43 @@
 /* ==========================================================================
-   Icon Grid block – icon + short label, no card chrome
+   Icon Grid block – navy chip: icon + label side by side, no card chrome
+   beyond the chip itself (matches the Gartner-category tiles on the source
+   brochure page: solid navy rounded rectangle, white icon left, white bold
+   label right, ~3:1 width:height, 4 columns at desktop).
    ========================================================================== */
 
 .icon-grid-list {
+  --icon-grid-navy: #1c2b4a;
+
   list-style: none;
   margin: 0;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--space-l) var(--space-m);
+  grid-template-columns: 1fr;
+  gap: var(--space-s);
   max-width: 1200px;
   margin-inline: auto;
 }
 
 .icon-grid-item {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  text-align: center;
+  text-align: left;
   gap: var(--space-s);
+  background-color: var(--icon-grid-navy);
+  border-radius: 6px;
+  padding: var(--space-s) var(--space-m);
 }
 
-/* Icon (authored picture or placeholder) */
+/* Icon (authored picture or keyword-matched glyph) */
 .icon-grid-icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 56px;
-  height: 56px;
+  width: 32px;
+  height: 32px;
   flex-shrink: 0;
+  color: #fff;
 }
 
 .icon-grid-icon picture {
@@ -50,35 +59,27 @@
   justify-content: center;
   width: 100%;
   height: 100%;
-  border-radius: 50%;
-  border: 1.5px solid var(--color-gray-300, #b5b5b5);
-  color: var(--color-rust, #da291c);
 }
 
 .icon-grid-icon-placeholder svg {
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
 }
 
 /* Label */
 .icon-grid-label {
   margin: 0;
   font-size: 12px;
-  line-height: 1.4;
-  color: var(--color-ink, #333);
-  max-width: 140px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: #fff;
 }
 
-/* Tablet: 3 columns */
+/* Tablet: 2 columns */
 @media (width >= 600px) {
   .icon-grid-list {
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--space-xl) var(--space-l);
-  }
-
-  .icon-grid-icon {
-    width: 64px;
-    height: 64px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-m);
   }
 
   .icon-grid-label {
@@ -86,22 +87,28 @@
   }
 }
 
-/* Desktop: adapts by available width / item count instead of a fixed
-   column count, so grids with fewer or more items still lay out cleanly. */
+/* Desktop: fixed 4 columns, matching the source brochure's tile grid
+   (this block always lays out as a compact multi-row tile grid, not a
+   width-hungry auto-fill — it sits inside a narrower column on the page,
+   so more columns would make the chips too squat). */
 @media (width >= 900px) {
   .icon-grid-list {
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-s) var(--space-m);
   }
-}
 
-@media (width >= 1200px) {
-  .icon-grid-list {
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: var(--space-xl);
+  .icon-grid-item {
+    aspect-ratio: 3 / 1;
+    padding-inline: var(--space-m);
   }
 
   .icon-grid-icon {
-    width: 72px;
-    height: 72px;
+    width: 34px;
+    height: 34px;
+  }
+
+  .icon-grid-icon-placeholder svg {
+    width: 30px;
+    height: 30px;
   }
 }

@@ -95,11 +95,13 @@
 }
 
 .growth-stairs-chip-achievement {
-  background: #5a0e0e;
+  /* Sampled from pdf-pages/page-05.png (NGFW/Secure Boot bars): #910302 */
+  background: #910302;
 }
 
 .growth-stairs-chip-base {
-  background: #2a2a2a;
+  /* Sampled from pdf-pages/page-05.png (carried-forward bars): #444141 */
+  background: #444141;
 }
 
 .growth-stairs-label {

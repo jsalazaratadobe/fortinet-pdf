@@ -21,7 +21,9 @@
 
 .flow-arrows-step {
   position: relative;
-  background: #e5262a;
+
+  /* Sampled from pdf-pages/page-06.png flow-arrows band: #ed1c24 */
+  background: #ed1c24;
   color: #fff;
   border-radius: 8px;
   padding: var(--space-m) var(--space-l);

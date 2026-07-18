@@ -116,9 +116,15 @@
   display: none;
 }
 
-.layer-stack .layer-stack-caption-icon {
+/* Icons are colored "badge" glyphs (filled shield/lock/firewall/chip/gear,
+   each with its own baked-in color) rather than plain currentColor
+   outlines, matching the source brochure. A caption row may have more than
+   one icon (e.g. Infrastructure's firewall + switch icons). */
+.layer-stack .layer-stack-caption-icons {
   flex-shrink: 0;
-  color: var(--ls-infrastructure);
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .layer-stack .layer-stack-caption-icon svg {
@@ -127,11 +133,24 @@
   display: block;
 }
 
+.layer-stack .layer-stack-caption-icons .layer-stack-caption-icon:nth-child(2) svg {
+  width: 16px;
+  height: 16px;
+}
+
+.layer-stack .layer-stack-caption-text-wrap {
+  min-width: 0;
+}
+
 .layer-stack .layer-stack-caption-text {
   margin: 0;
   font-size: 14px;
   line-height: 1.5;
   color: #333;
+}
+
+.layer-stack .layer-stack-caption-text + .layer-stack-caption-text {
+  margin-top: 2px;
 }
 
 /* ==========================================================================
@@ -187,7 +206,7 @@
     flex-shrink: 0;
   }
 
-  .layer-stack .layer-stack-caption-icon {
+  .layer-stack .layer-stack-caption-icons {
     margin: 0 12px;
   }
 

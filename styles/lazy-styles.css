@@ -407,7 +407,12 @@ header .nav-wrapper.scrolled {
     align-items: start;
   }
 
-  main > .section.brochure-page-2 > .stat-rail-wrapper {
-    grid-row: 1 / -1;
+  main > .section.brochure-page-2:has(> .stat-rail-wrapper) > .stat-rail-wrapper {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  main > .section.brochure-page-2:has(> .stat-rail-wrapper) > *:not(.stat-rail-wrapper) {
+    grid-column: 2;
   }
 }

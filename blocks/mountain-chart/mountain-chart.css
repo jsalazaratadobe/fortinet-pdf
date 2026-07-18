@@ -84,13 +84,52 @@
 }
 
 /* Timeline strip (era dots + labels below the canvas) */
+.mountain-chart-timeline-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-s);
+}
+
 .mountain-chart-timeline {
   display: flex;
   overflow-x: auto;
+  flex: 1;
+  min-width: 0;
   gap: var(--space-m);
   padding-top: var(--space-s);
   border-top: 2px solid #e5262a;
   scrollbar-width: thin;
+}
+
+/*
+ * "OS" roundel anchoring the left end of the Fortinet Journey timeline
+ * (pdf-pages/page-06.png, journey variant only).
+ */
+.mountain-chart-os-badge {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  margin-top: 2px;
+  border: 1.5px solid #333;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+}
+
+.mountain-chart-os-badge-text {
+  font-size: 12px;
+  font-weight: 700;
+  color: #1a1a1a;
+  line-height: 1;
+}
+
+.mountain-chart-os-badge-icon svg {
+  width: 14px;
+  height: 14px;
+  color: #e5262a;
 }
 
 .mountain-chart-timeline-item {

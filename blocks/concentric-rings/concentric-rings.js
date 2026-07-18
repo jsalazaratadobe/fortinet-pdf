@@ -53,10 +53,14 @@ const RIM = {
   },
   bottom: {
     label: 'SECURITY OPERATIONS',
+    // Left-to-right order matches the source diagram, where the rim icons
+    // cascade outward from the label: "AI Exposure Guard" sits lowest and
+    // closest to the SECURITY OPERATIONS label, "Data Leakage Prevention"
+    // sits highest and closest to the divider/AI badge on the right.
     items: [
-      { icon: 'droplet', label: 'Data Leakage Prevention' },
-      { icon: 'gear', label: 'Autonomous SOC' },
       { icon: 'target', label: 'AI Exposure Guard' },
+      { icon: 'gear', label: 'Autonomous SOC' },
+      { icon: 'droplet', label: 'Data Leakage Prevention' },
     ],
   },
 };

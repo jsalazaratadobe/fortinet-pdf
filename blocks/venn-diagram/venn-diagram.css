@@ -6,8 +6,8 @@
 
 .venn-diagram {
   --venn-red: #e5262a;
-  --venn-overlap: #9e3d38;
-  --venn-halo: #e2e2e2;
+  --venn-overlap: #9e2826;
+  --venn-halo: #d1d0d0;
 
   width: 100%;
   padding: var(--space-l) 0;
@@ -28,13 +28,19 @@
   display: block;
   width: 900px;
   max-width: none;
-  aspect-ratio: 1200 / 760;
+  aspect-ratio: 1200 / 860;
   margin: 0 auto;
 }
 
 /* Fills */
+
+/* The source PDF's soft outer ring is a thin halo held a visible gap away
+   from the circle edge (a drop-shadow-like look), not a ring flush against
+   it - so this is a stroked, unfilled circle rather than a filled disc. */
 .venn-diagram .venn-circle-halo {
-  fill: var(--venn-halo);
+  fill: none;
+  stroke: var(--venn-halo);
+  stroke-width: 7px;
 }
 
 .venn-diagram .venn-circle-left {
